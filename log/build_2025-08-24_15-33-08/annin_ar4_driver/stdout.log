@@ -1,0 +1,81 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.8.4 (/home/yahia-raouf/ws_moveit/install/ament_cmake/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0/BoostConfig.cmake (found version "1.83.0") found components: system 
+-- Found controller_manager: 4.35.0 (/opt/ros/jazzy/share/controller_manager/cmake)
+-- Found rosidl_generator_c: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.2 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Configuring done (2.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_driver
+[ 62%] [32mBuilding CXX object CMakeFiles/annin_ar4_driver.dir/src/ar_servo_gripper_hw_interface.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/annin_ar4_driver.dir/src/gripper_overcurrent_protection.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/annin_ar4_driver.dir/src/teensy_driver.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/annin_ar4_driver.dir/src/ar_hardware_interface.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/annin_ar4_driver.dir/src/arduino_nano_driver.cpp.o[0m
+[ 75%] [32m[1mLinking CXX shared library libannin_ar4_driver.so[0m
+[ 75%] Built target annin_ar4_driver
+[ 87%] [32mBuilding CXX object CMakeFiles/run_arduino_nano.dir/src/run_arduino_nano.cpp.o[0m
+[100%] [32m[1mLinking CXX executable run_arduino_nano[0m
+[100%] Built target run_arduino_nano
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/lib/annin_ar4_driver/run_arduino_nano
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver//hardware_interface_plugin.xml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/include/annin_ar4_driver/annin_ar4_driver/ar_hardware_interface.hpp
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/include/annin_ar4_driver/annin_ar4_driver/ar_servo_gripper_hw_interface.hpp
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/include/annin_ar4_driver/annin_ar4_driver/arduino_nano_driver.hpp
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/include/annin_ar4_driver/annin_ar4_driver/gripper_overcurrent_protection.hpp
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/include/annin_ar4_driver/annin_ar4_driver/teensy_driver.hpp
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/controllers.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/driver.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/gripper_driver.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/joint_offsets/mk1.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/joint_offsets/mk2.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/config/joint_offsets/mk3.yaml
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/launch/driver.launch.py
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/urdf/ar.urdf.xacro
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/lib/annin_ar4_driver/reset_estop.sh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/library_path.sh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/library_path.dsv
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/ament_index/resource_index/package_run_dependencies/annin_ar4_driver
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/ament_index/resource_index/parent_prefix_path/annin_ar4_driver
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/ament_prefix_path.sh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/ament_prefix_path.dsv
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/path.sh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/environment/path.dsv
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/local_setup.bash
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/local_setup.sh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/local_setup.zsh
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/local_setup.dsv
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/package.dsv
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/ament_index/resource_index/packages/annin_ar4_driver
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/ament_index/resource_index/hardware_interface__pluginlib__plugin/annin_ar4_driver
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/ament_cmake_export_targets-extras.cmake
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/annin_ar4_driverConfig.cmake
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/annin_ar4_driverConfig-version.cmake
+-- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/package.xml
+-- Installing: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/lib/libannin_ar4_driver.so
+-- Set non-toolchain portion of runtime path of "/home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/lib/libannin_ar4_driver.so" to ""
+-- Installing: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/export_annin_ar4_driverExport.cmake
+-- Installing: /home/yahia-raouf/Ar4_Ros_ws/install/annin_ar4_driver/share/annin_ar4_driver/cmake/export_annin_ar4_driverExport-noconfig.cmake

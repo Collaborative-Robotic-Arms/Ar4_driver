@@ -1,0 +1,88 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-eaaf6bc13e2ba5b4405a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "annin_ar4_driver",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "annin_ar4_driver::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-annin_ar4_driver-f0c772e7a81534aad11c.json",
+					"name" : "annin_ar4_driver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "annin_ar4_driver_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-annin_ar4_driver_uninstall-d9bb8f164c091a416996.json",
+					"name" : "annin_ar4_driver_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_arduino_nano::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_arduino_nano-34bd025711c6afaadd18.json",
+					"name" : "run_arduino_nano",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-5abfc034dd7fbb8e80c1.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_driver",
+		"source" : "/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/annin_ar4_driver"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

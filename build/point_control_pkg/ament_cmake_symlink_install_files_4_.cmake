@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg" FILES "/home/yahia-raouf/ws_moveit/install/ament_cmake_core/share/ament_cmake_core/cmake/environment_hooks/environment/path.sh" "DESTINATION" "share/point_control_pkg/environment")

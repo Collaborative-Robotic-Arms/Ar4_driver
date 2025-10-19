@@ -1,0 +1,25 @@
+[0.017s] Invoking command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg -- -j16 -l16
+[0.112s] [ 50%] [32mBuilding CXX object CMakeFiles/point_control.dir/src/point_control.cpp.o[0m
+[6.585s] [100%] [32m[1mLinking CXX executable point_control[0m
+[6.992s] [100%] Built target point_control
+[7.009s] Invoked command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg -- -j16 -l16
+[7.011s] Invoking command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg
+[7.023s] -- Install configuration: ""
+[7.024s] -- Execute custom install script
+[7.024s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/lib/point_control_pkg/point_control
+[7.025s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/package_run_dependencies/point_control_pkg
+[7.025s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/parent_prefix_path/point_control_pkg
+[7.025s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/ament_prefix_path.sh
+[7.026s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/ament_prefix_path.dsv
+[7.026s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/path.sh
+[7.026s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/path.dsv
+[7.027s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.bash
+[7.027s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.sh
+[7.027s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.zsh
+[7.027s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.dsv
+[7.028s] -- Symlinking: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/package.dsv
+[7.042s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/packages/point_control_pkg
+[7.042s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/cmake/point_control_pkgConfig.cmake
+[7.042s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/cmake/point_control_pkgConfig-version.cmake
+[7.043s] -- Up-to-date symlink: /home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/package.xml
+[7.044s] Invoked command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg

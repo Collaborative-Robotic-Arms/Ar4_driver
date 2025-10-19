@@ -1,0 +1,16 @@
+[0mCMake Deprecation Warning at /home/yahia-raouf/ws_moveit/install/ament_cmake_target_dependencies/share/ament_cmake_target_dependencies/cmake/ament_target_dependencies.cmake:87 (message):
+  ament_target_dependencies() is deprecated.  Use target_link_libraries()
+  with modern CMake targets instead.  Try replacing this call with:
+
+    target_link_libraries(point_control PUBLIC
+      moveit_ros_planning_interface::moveit_common_planning_interface_objects
+      moveit_ros_planning_interface::moveit_move_group_interface
+      moveit_ros_planning_interface::moveit_planning_scene_interface
+      rclcpp::rclcpp
+      tf2_geometry_msgs::tf2_geometry_msgs
+    )
+
+Call Stack (most recent call first):
+  CMakeLists.txt:16 (ament_target_dependencies)
+
+[0m

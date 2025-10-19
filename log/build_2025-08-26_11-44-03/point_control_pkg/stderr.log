@@ -1,0 +1,12 @@
+[01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:115:19:[m[K [01;31m[Kerror: [m[Kexpected constructor, destructor, or type conversion before ‘[01m[K;[m[K’ token
+  115 | rclcpp::shutdown()[01;31m[K;[m[K
+      |                   [01;31m[K^[m[K
+[01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:116:1:[m[K [01;31m[Kerror: [m[Kexpected unqualified-id before ‘[01m[Kreturn[m[K’
+  116 | [01;31m[Kreturn[m[K 0;
+      | [01;31m[K^~~~~~[m[K
+[01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:117:1:[m[K [01;31m[Kerror: [m[Kexpected declaration before ‘[01m[K}[m[K’ token
+  117 | [01;31m[K}[m[K
+      | [01;31m[K^[m[K
+gmake[2]: *** [CMakeFiles/point_control.dir/build.make:76: CMakeFiles/point_control.dir/src/point_control.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/point_control.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

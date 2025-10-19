@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/annin_ar4_description" FILES "/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_description/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/annin_ar4_description" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")

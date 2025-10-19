@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg" FILES "/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/point_control_pkg" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")

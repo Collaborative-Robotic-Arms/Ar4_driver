@@ -1,0 +1,16 @@
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/lib/point_control_pkg/point_control
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/package_run_dependencies/point_control_pkg
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/parent_prefix_path/point_control_pkg
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/ament_prefix_path.sh
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/ament_prefix_path.dsv
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/path.sh
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/environment/path.dsv
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.bash
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.sh
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.zsh
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/local_setup.dsv
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/package.dsv
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/ament_index/resource_index/packages/point_control_pkg
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/cmake/point_control_pkgConfig.cmake
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/cmake/point_control_pkgConfig-version.cmake
+/home/yahia-raouf/Ar4_Ros_ws/install/point_control_pkg/share/point_control_pkg/package.xml

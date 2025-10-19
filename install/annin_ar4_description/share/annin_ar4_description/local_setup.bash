@@ -1,0 +1,1 @@
+/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_description/ament_cmake_environment_hooks/local_setup.bash

@@ -1,0 +1,15 @@
+[0.015s] Invoking command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg -- -j16 -l16
+[0.149s] [ 50%] [32mBuilding CXX object CMakeFiles/point_control.dir/src/point_control.cpp.o[0m
+[3.939s] [01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:115:19:[m[K [01;31m[Kerror: [m[Kexpected constructor, destructor, or type conversion before ‘[01m[K;[m[K’ token
+[3.939s]   115 | rclcpp::shutdown()[01;31m[K;[m[K
+[3.939s]       |                   [01;31m[K^[m[K
+[3.939s] [01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:116:1:[m[K [01;31m[Kerror: [m[Kexpected unqualified-id before ‘[01m[Kreturn[m[K’
+[3.939s]   116 | [01;31m[Kreturn[m[K 0;
+[3.939s]       | [01;31m[K^~~~~~[m[K
+[3.939s] [01m[K/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/point_control_pkg/src/point_control.cpp:117:1:[m[K [01;31m[Kerror: [m[Kexpected declaration before ‘[01m[K}[m[K’ token
+[3.939s]   117 | [01;31m[K}[m[K
+[3.939s]       | [01;31m[K^[m[K
+[5.576s] gmake[2]: *** [CMakeFiles/point_control.dir/build.make:76: CMakeFiles/point_control.dir/src/point_control.cpp.o] Error 1
+[5.577s] gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/point_control.dir/all] Error 2
+[5.577s] gmake: *** [Makefile:146: all] Error 2
+[5.579s] Invoked command in '/home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/yahia-raouf/ws_moveit/install/moveit_configs_utils:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/yahia-raouf/Ar4_Ros_ws/build/point_control_pkg -- -j16 -l16

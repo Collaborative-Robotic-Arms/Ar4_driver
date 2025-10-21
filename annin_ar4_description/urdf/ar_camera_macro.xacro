@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:macro name="ar_camera" params="
+        tf_prefix
+        parent
+    ">
+
+    <link name="camera_link_ar4">
+        <visual>
+        <geometry>
+            <box size="0.01 0.01 0.01"/>
+        </geometry>
+        <material name="red">
+            <color rgba="1 0 0 1"/>
+        </material>
+        </visual>
+        <collision>
+        <geometry>
+            <box size="0.01 0.01 0.01"/>
+        </geometry>
+        </collision>
+        <inertial>
+        <mass value="0.01"/>
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <joint name="camera_joint_ar4" type="fixed">
+        <parent link="${parent}"/>
+        <child link="camera_link_ar4"/>
+        <origin xyz="0.0 -0.03 0.0" rpy="1.5708 -1.5708 0"/>
+    </joint>
+
+    <gazebo reference="camera_link_ar4">
+        <sensor name="cameraAR4" type="camera">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <visualize>true</visualize>
+        <topic>/cameraAR4/image_raw</topic>
+        <camera>
+            <camera_info_topic>/cameraAR4/camera_info</camera_info_topic>
+            <horizontal_fov>1.39626</horizontal_fov>
+            <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+            </image>
+            <clip>
+            <near>0.02</near>
+            <far>300</far>
+            </clip>
+        </camera>
+
+        <gz_frame_id>camera_link_ar4</gz_frame_id>
+        </sensor>
+    </gazebo>
+    </xacro:macro>
+</robot>

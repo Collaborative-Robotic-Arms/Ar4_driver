@@ -1,1 +1,0 @@
-/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_moveit_config/ament_cmake_environment_hooks/local_setup.zsh

@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/annin_ar4_driver" FILES "/opt/ros/jazzy/lib/python3.12/site-packages/ament_package/template/environment_hook/library_path.sh" "DESTINATION" "share/annin_ar4_driver/environment")

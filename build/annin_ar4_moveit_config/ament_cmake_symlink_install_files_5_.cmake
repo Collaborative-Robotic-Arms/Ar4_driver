@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/annin_ar4_moveit_config" FILES "/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_moveit_config/ament_cmake_environment_hooks/path.dsv" "DESTINATION" "share/annin_ar4_moveit_config/environment")

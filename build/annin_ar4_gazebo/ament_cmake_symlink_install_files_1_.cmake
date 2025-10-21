@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_files("/home/yahia-raouf/Ar4_Ros_ws/src/ar4_ros_driver/annin_ar4_gazebo" FILES "/home/yahia-raouf/Ar4_Ros_ws/build/annin_ar4_gazebo/ament_cmake_index/share/ament_index/resource_index/parent_prefix_path/annin_ar4_gazebo" "DESTINATION" "share/ament_index/resource_index/parent_prefix_path")

@@ -13,9 +13,13 @@
   <depend>moveit_ros_planning_interface</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>libcurl4-openssl-dev</depend>
+  <depend>control_msgs</depend>
+  <depend>moveit_msgs</depend>
+  
 
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

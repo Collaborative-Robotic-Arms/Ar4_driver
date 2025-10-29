@@ -57,7 +57,8 @@ int JOINT_LIMIT_MAX_MK3[] = {170, 90, 52, 180, 105, 180};
 std::map<String, const int*> REST_MOTOR_STEPS;
 const int REST_MOTOR_STEPS_MK1[] = {7555, 2333, 4944, 7049, 2295, 3431};
 const int REST_MOTOR_STEPS_MK2[] = {7555, 2333, 4944, 7049, 2295, 3431};
-const int REST_MOTOR_STEPS_MK3[] = {7666, 2333, 4499, 9084, 2295, 4177};
+//const int REST_MOTOR_STEPS_MK3[] = {7666, 2333, 4499, 9084, 2295, 4177}; // { +44.4444, 2*55.555, 0, 49.7777, -8*21.866, } 
+const int REST_MOTOR_STEPS_MK3[] = {7665.4444, 2444.1111, 4554, 9133.7777, 2120.0672, 4177};
 
 enum SM { STATE_TRAJ, STATE_ERR };
 SM STATE = STATE_TRAJ;
@@ -72,7 +73,7 @@ const int LIMIT_SWITCH_HIGH[] = {
     1, 1, 1, 1, 1, 1};  // to account for both NC and NO limit switches
 const int CAL_DIR[] = {-1, -1, 1,
                        -1, -1, 1};  // joint rotation direction to limit switch
-const int CAL_SPEED = 500;          // motor steps per second
+const int CAL_SPEED = 600;          // motor steps per second
 const float CAL_SPEED_MULT[] = {
     1, 1, 1, 1, 0.5, 1};  // multiplier to account for motor steps/rev
 // num of encoder steps in range of motion of joint

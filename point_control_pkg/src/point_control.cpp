@@ -48,7 +48,7 @@ int main(int arc, char *argv[]) {
 
     move_group_interface.setMaxVelocityScalingFactor(
         0.7);  // 20% of max velocity
-    move_group_interface.setMaxAccelerationScalingFactor(0.5);
+    move_group_interface.setMaxAccelerationScalingFactor(0.3);
 
     /**************************** SETTING PLANNER
      * ***********************************/

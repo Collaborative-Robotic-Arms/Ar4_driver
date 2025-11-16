@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "ROS2 + MoveIt (clang)",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/ros/jazzy/include/**",
+                "/home/yahia-raouf/ws_moveit/install/**",
+                "/home/yahia-raouf/ws_moveit/install/moveit_core/include/**",
+                "/home/yahia-raouf/ws_moveit/install/moveit_ros_planning_interface/include/**",
+                "/home/yahia-raouf/ws_moveit/install/moveit_servo/include/**",
+                "/usr/include**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang-18",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "${workspaceFolder}/compile_commands.json",
+            "configurationProvider": "go2sh.cmake-integration"
+        }
+    ],
+    "version": 4
+}

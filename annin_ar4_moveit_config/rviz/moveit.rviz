@@ -7,8 +7,6 @@ Panels:
         - /Global Options1
         - /MotionPlanning1
         - /MotionPlanning1/Scene Robot1
-        - /MotionPlanning1/Scene Robot1/Links1
-        - /MotionPlanning1/Scene Robot1/Links1/laser_point1
       Splitter Ratio: 0.4957627058029175
     Tree Height: 190
   - Class: rviz_common/Selection
@@ -71,6 +69,10 @@ Visualization Manager:
         Color Enabled: true
         Interrupt Display: true
         Links:
+          Abb_dummy_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           All Links Enabled: true
           Expand Joint Details: false
           Expand Link Details: false
@@ -85,11 +87,6 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          laser_holder_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           laser_point:
             Alpha: 1
             Show Axes: false
@@ -149,7 +146,7 @@ Visualization Manager:
         Colliding Link Color: 255; 0; 0
         Goal State Alpha: 1
         Goal State Color: 250; 128; 0
-        Interactive Marker Size: 0.1
+        Interactive Marker Size: 0.10000000149011612
         Joint Violation Color: 255; 0; 255
         Planning Group: ar_manipulator
         Query Goal State: true
@@ -169,6 +166,10 @@ Visualization Manager:
       Scene Robot:
         Attached Body Color: 150; 50; 150
         Links:
+          Abb_dummy_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           All Links Enabled: true
           Expand Joint Details: false
           Expand Link Details: false
@@ -183,14 +184,9 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          laser_holder_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           laser_point:
             Alpha: 1
-            Show Axes: true
+            Show Axes: false
             Show Trail: false
           link_1:
             Alpha: 1
@@ -277,7 +273,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.1534814834594727
+      Distance: 2.0502264499664307
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -292,10 +288,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.620398223400116
+      Pitch: 0.38039839267730713
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.953577995300293
+      Yaw: 6.093579292297363
     Saved: ~
 Window Geometry:
   Displays:

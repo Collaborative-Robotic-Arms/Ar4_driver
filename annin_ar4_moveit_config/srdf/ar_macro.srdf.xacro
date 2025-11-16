@@ -14,7 +14,7 @@ are defined
       <joint name="${tf_prefix}joint_5" />
       <joint name="${tf_prefix}joint_6" />
       <joint name="${tf_prefix}ee_joint" />
-      <chain base_link="base_link" tip_link="ee_link"/>
+      <chain base_link="${tf_prefix}base_link" tip_link="${tf_prefix}ee_link" />
     </group>
     <group_state name="home" group="ar_manipulator">
       <joint name="${tf_prefix}joint_1" value="0" />

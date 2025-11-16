@@ -15,7 +15,7 @@ Stephen Brawner (brawner@gmail.com)
     </joint>
 
     <link
-      name="gripper_base_link">
+      name="${tf_prefix}gripper_base_link">
       <inertial>
         <origin
           xyz="0.000218865638025569 -5.75810071732045E-05 0.0188189080442559"
@@ -143,9 +143,9 @@ Stephen Brawner (brawner@gmail.com)
         xyz="0.014 -0.0029 0.001"
         rpy="1.5708 0 0 " />
       <parent
-        link="gripper_base_link" />
+        link="${tf_prefix}gripper_base_link" />
       <child
-        link="gripper_jaw1_link" />
+        link="${tf_prefix}gripper_jaw1_link" />
       <axis
         xyz="-1 0 0" />
       <limit
@@ -161,9 +161,9 @@ Stephen Brawner (brawner@gmail.com)
         xyz="-0.014 -0.0029 0.001"
         rpy="1.5708 0 0" />
       <parent
-        link="gripper_base_link" />
+        link="${tf_prefix}gripper_base_link" />
       <child
-        link="gripper_jaw2_link" />
+        link="${tf_prefix}gripper_jaw2_link" />
       <axis
         xyz="1 0 0" />
       <limit

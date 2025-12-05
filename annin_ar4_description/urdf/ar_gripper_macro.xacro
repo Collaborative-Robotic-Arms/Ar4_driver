@@ -171,7 +171,6 @@ Stephen Brawner (brawner@gmail.com)
         upper="0.015"
         effort="1000"
         velocity="1.0" />
-      <mimic joint="${tf_prefix}gripper_jaw1_joint" multiplier="1" offset="0" />
     </joint>
   </xacro:macro>
 </robot>

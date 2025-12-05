@@ -67,7 +67,7 @@
       <limit
         lower="${robot_parameters['j1_limit_min']}"
         upper="${robot_parameters['j1_limit_max']}"
-        effort="-1"
+        effort="1000"
         velocity="1.0472"
       />
     </joint>
@@ -101,7 +101,7 @@
       <limit 
         lower="${robot_parameters['j2_limit_min']}"
         upper="${robot_parameters['j2_limit_max']}"
-        effort="-1" 
+        effort="1000" 
         velocity="1.0472"
       />
     </joint>
@@ -135,7 +135,7 @@
       <limit
         lower="${robot_parameters['j3_limit_min']}"
         upper="${robot_parameters['j3_limit_max']}"
-        effort="-1"
+        effort="1000"
         velocity="1.0472"
       />
     </joint>
@@ -169,7 +169,7 @@
       <limit
         lower="${robot_parameters['j4_limit_min']}"
         upper="${robot_parameters['j4_limit_max']}"
-        effort="-1"
+        effort="1000"
         velocity="1.0472"
       />
     </joint>
@@ -203,7 +203,7 @@
       <limit
         lower="${robot_parameters['j5_limit_min']}"
         upper="${robot_parameters['j5_limit_max']}"
-        effort="-1"
+        effort="1000"
         velocity="1.0472"
       />
     </joint>
@@ -237,7 +237,7 @@
       <limit
         lower="${robot_parameters['j6_limit_min']}"
         upper="${robot_parameters['j6_limit_max']}"
-        effort="-1"
+        effort="1000"
         velocity="1.0472"
       />
     </joint>

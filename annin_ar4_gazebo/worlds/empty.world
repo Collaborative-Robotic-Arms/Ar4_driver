@@ -271,5 +271,13 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
 
+
+  <include>
+      <static>true</static>
+      <pose>1 0.0 0.86 0 0 1.57</pose>
+      <name>box_1</name>
+      <uri>model://aruco_box</uri>
+    </include>
+    
   </world>
 </sdf>

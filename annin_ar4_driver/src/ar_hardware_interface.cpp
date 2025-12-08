@@ -1,5 +1,6 @@
 #include <annin_ar4_driver/ar_hardware_interface.hpp>
 #include <sstream>
+#define OPEN_LOOP
 
 namespace annin_ar4_driver {
 
@@ -125,9 +126,16 @@ hardware_interface::return_type ARHardwareInterface::read(
     driver_.getJointVelocities(actuator_velocities_);
     for (size_t i = 0; i < info_.joints.size(); ++i) {
         // apply offsets, convert from deg to rad for moveit
+        #ifdef OPEN_LOOP
+        joint_positions_[i] =
+            degToRad(actuator_pos_commands_[i] + joint_offsets_[i]);
+        joint_velocities_[i] = degToRad(actuator_vel_commands_[i]);
+        #endif
+        #ifdef CLOSED_LOOP
         joint_positions_[i] =
             degToRad(actuator_positions_[i] + joint_offsets_[i]);
         joint_velocities_[i] = degToRad(actuator_velocities_[i]);
+        #endif
     }
     return hardware_interface::return_type::OK;
 }

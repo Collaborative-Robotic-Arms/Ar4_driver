@@ -29,11 +29,11 @@ endif()
 # ==========================================================
 # Executables
 # ==========================================================
-add_executable(point_control src/point_control.cpp)
+add_executable(pose_commander src/pose_commander.cpp)
 # ==========================================================
 # Link dependencies
 # ==========================================================
-ament_target_dependencies(point_control
+ament_target_dependencies(pose_commander
   rclcpp
   moveit_ros_planning_interface
   tf2_geometry_msgs
@@ -46,7 +46,7 @@ ament_target_dependencies(point_control
 # Install targets
 # ==========================================================
 install(TARGETS
-  point_control
+  pose_commander
   DESTINATION lib/${PROJECT_NAME}
 )
 

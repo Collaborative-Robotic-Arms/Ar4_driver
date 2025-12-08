@@ -1,6 +1,6 @@
 #include <annin_ar4_driver/ar_hardware_interface.hpp>
 #include <sstream>
-#define OPEN_LOOP
+#define OPEN_LOOP // OPEN_LOOP (doesnt listen to encoders) or CLOSED_LOOP
 
 namespace annin_ar4_driver {
 

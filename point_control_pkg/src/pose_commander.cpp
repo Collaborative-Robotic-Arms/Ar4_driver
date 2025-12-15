@@ -1,166 +1,147 @@
-#include <moveit/move_group_interface/move_group_interface.hpp>
+/**************************** INCLUDES *************************************/
+#include <stdio.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+
+#include <csignal>
 #include <geometry_msgs/msg/pose.hpp>
-#include <iostream>
 #include <memory>
+#include <moveit/move_group_interface/move_group_interface.hpp>
 #include <rclcpp/rclcpp.hpp>
-
-// Headers for RPY to Quaternion conversion
-#include <tf2/LinearMath/Quaternion.hpp>
-#include <tf2/LinearMath/Transform.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <thread>
 
-// Define your robot's planning group name
-static const std::string PLANNING_GROUP = "ar_manipulator";
+using namespace std;
+using moveit::planning_interface::MoveGroupInterface;
 
-void go_to_pose(moveit::planning_interface::MoveGroupInterface& move_group_interface,
-                const rclcpp::Logger& logger) {
-    
-    // 1. Clear previous target to ensure fresh planning
-    move_group_interface.clearPoseTargets();
-    
-    // 2. User Input
-    double x, y, z, roll_deg, pitch_deg, yaw_deg;
+std::atomic<bool> running(true);
 
-    std::cout << "\n--- Target Pose Input ---\n";
-    std::cout << "Enter X position (meters): ";
-    std::cin >> x;
-    std::cout << "Enter Y position (meters): ";
-    std::cin >> y;
-    std::cout << "Enter Z position (meters): ";
-    std::cin >> z;
-    std::cout << "Enter Roll angle (degrees): ";
-    std::cin >> roll_deg;
-    std::cout << "Enter Pitch angle (degrees): ";
-    std::cin >> pitch_deg;
-    std::cout << "Enter Yaw angle (degrees): ";
-    std::cin >> yaw_deg;
-
-    // 3. RPY to Quaternion Conversion
-    // Use M_PI defined in <cmath> (often included via other headers)
-    double roll_rad = roll_deg * M_PI / 180.0;
-    double pitch_rad = pitch_deg * M_PI / 180.0;
-    double yaw_rad = yaw_deg * M_PI / 180.0;
-
-    tf2::Quaternion q_tf2;
-    q_tf2.setRPY(roll_rad, pitch_rad, yaw_rad);
-    geometry_msgs::msg::Quaternion q_msg = tf2::toMsg(q_tf2);
-
-    // 4. Create Target Pose
-    geometry_msgs::msg::Pose target_pose;
-    target_pose.position.x = x;
-    target_pose.position.y = y;
-    target_pose.position.z = z;
-    target_pose.orientation = q_msg;
-
-    RCLCPP_INFO(logger, "Attempting to plan to target pose:");
-    RCLCPP_INFO(logger, "XYZ: (%.4f, %.4f, %.4f)", x, y, z);
-    RCLCPP_INFO(logger, "RPY: (%.1f, %.1f, %.1f) deg", roll_deg, pitch_deg, yaw_deg);
-
-    // 5. Plan and Execute
-    move_group_interface.setPoseTarget(target_pose);
-
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    bool success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-
-    if (success) {
-        RCLCPP_INFO(logger, "Planning successful! Executing motion...");
-        // Call stop() before execute() to explicitly halt any residual motion, 
-        // mitigating execution errors.
-        move_group_interface.stop();
-        move_group_interface.execute(plan);
-        RCLCPP_INFO(logger, "Motion finished.");
-    } else {
-        RCLCPP_ERROR(logger, "Planning failed to find a path to the target pose.");
-    }
+// Signal handler for Ctrl+C
+void signalHandler(int signum) {
+    std::cout << "\nInterrupt signal (" << signum << ") received. Exiting...\n";
+    running = false;
 }
 
-void go_to_home(moveit::planning_interface::MoveGroupInterface& move_group_interface,
-                const rclcpp::Logger& logger) {
-    
-    // 1. Clear previous target
-    move_group_interface.clearPoseTargets();
+int main(int arc, char *argv[]) {
+    /********************** INITIALIZATION
+     * ****************************/
+    rclcpp::init(arc, argv);
+    std::signal(SIGINT, signalHandler);
 
-    // 2. Set the named target "home"
-    RCLCPP_INFO(logger, "Planning to move to 'home' configuration...");
-    move_group_interface.setNamedTarget("home");
-
-    // 3. Plan and Execute
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    bool success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-
-    if (success) {
-        RCLCPP_INFO(logger, "Planning successful! Executing motion...");
-        move_group_interface.stop();
-        move_group_interface.execute(plan);
-        RCLCPP_INFO(logger, "Returned to home configuration.");
-    } else {
-        RCLCPP_ERROR(logger, "Planning failed to find a path to the 'home' configuration.");
-    }
-}
-
-
-int main(int argc, char* argv[]) {
-    // 1. Initialize ROS 2
-    rclcpp::init(argc, argv);
     auto const node = std::make_shared<rclcpp::Node>(
-        "rpy_pose_commander_loop",
-        rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
+        "AR4_tool_control",
+        rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(
+            true));
 
-    // Use a separate thread for MoveIt to run its callbacks
-    rclcpp::executors::SingleThreadedExecutor executor;
-    executor.add_node(node);
-    std::thread([&executor]() { executor.spin(); }).detach();
+    tf2_ros::Buffer tf_buffer(node->get_clock());
+    tf2_ros::TransformListener tf_listener(tf_buffer);
 
-    auto const logger = rclcpp::get_logger("pose_commander");
+    auto const logger = rclcpp::get_logger("AR4_tool_control");
 
-    // 2. Setup MoveGroup Interface
-    RCLCPP_INFO(logger, "Starting MoveGroupInterface for group: %s", PLANNING_GROUP.c_str());
+    auto move_group_interface = MoveGroupInterface(node, "ar_manipulator");
 
-    using moveit::planning_interface::MoveGroupInterface;
-    auto move_group_interface = MoveGroupInterface(node, PLANNING_GROUP);
+    RCLCPP_INFO(logger, "Ready to receive pose targets. Press CTRL+C to quit.");
 
-    // Initial configuration for robustness
-    move_group_interface.setPoseReferenceFrame("base_link"); 
-    move_group_interface.setPlanningTime(5.0); // Increase planning time for complex moves
-    move_group_interface.setMaxVelocityScalingFactor(0.7);
+    /**************************** VELOCITY AND ACCELERATION
+     * ***********************************/
+
+    move_group_interface.setMaxVelocityScalingFactor(
+        0.7);  // 20% of max velocity
     move_group_interface.setMaxAccelerationScalingFactor(0.5);
 
-    // Goal tolerances
-    move_group_interface.setGoalPositionTolerance(0.0005); // Tighter tolerance (0.5 mm)
-    move_group_interface.setGoalOrientationTolerance(0.005); // Tighter tolerance (~0.3 degrees)
-    move_group_interface.setGoalJointTolerance(0.001);
+    /**************************** SETTING PLANNER
+     * ***********************************/
+    move_group_interface.setPlanningPipelineId("ompl");
+    move_group_interface.setPlannerId("RRTConnectkConfigDefault");
 
-    // 3. Main Command Loop
-    int choice = 0;
-    while (rclcpp::ok()) {
-        std::cout << "\n====================================\n";
-        std::cout << "Robot Command Menu\n";
-        std::cout << "1. Move to a new XYZ/RPY Pose\n";
-        std::cout << "2. Go to 'home' configuration\n";
-        std::cout << "3. Exit\n";
-        std::cout << "Enter choice: ";
-        
-        if (!(std::cin >> choice)) {
-            // Handle bad input (e.g., non-numeric)
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            RCLCPP_ERROR(logger, "Invalid input. Please enter a number.");
-            continue; 
-        }
+    double x, y, z = 0.0;
+    double roll_deg, pitch_deg, yaw_deg = 0.0;
+    double w = 1.0;
 
-        if (choice == 1) {
-            go_to_pose(move_group_interface, logger);
-        } else if (choice == 2) {
-            go_to_home(move_group_interface, logger);
-        } else if (choice == 3) {
-            break; // Exit the loop
-        } else {
-            RCLCPP_WARN(logger, "Invalid choice. Please enter 1, 2, or 3.");
-        }
+    char option = 0;
+
+    while (rclcpp::ok() && running) {
+        cout << "\nHome (H or h), new pose (P or p), quit (Q or q): ";
+        cin >> option;
+        /****************************  HOMING OPTION
+         * ***********************************/
+
+        if (option == 'H' || option == 'h') {
+            // ---- Go to Home preset ----
+            move_group_interface.setNamedTarget("home");
+
+            auto const [success, plan] = [&move_group_interface] {
+                moveit::planning_interface::MoveGroupInterface::Plan msg;
+                auto const ok =
+                    static_cast<bool>(move_group_interface.plan(msg));
+                return std::make_pair(ok, msg);
+            }();
+
+            if (success) {
+                move_group_interface.execute(plan);
+                RCLCPP_INFO(logger, "Moved to HOME position.");
+            } else {
+                RCLCPP_ERROR(logger, "Planning to HOME failed!");
+            }
+            /**************************** POSITION GIVEN
+             * ************************************/
+
+        } else if (option == 'P' || option == 'p') {
+            // ---- Custom pose ----
+            cout << "\nEnter target pose (x y z roll pitch yaw in degrees): ";
+            if (!(cin >> x >> y >> z >> roll_deg >> pitch_deg >> yaw_deg)) {
+                cout << "Invalid input. Exiting...\n";
+                break;
+            }
+
+            double roll = (roll_deg * M_PI) / 180.0;
+            double pitch = (pitch_deg * M_PI) / 180.0;
+            double yaw = (yaw_deg * M_PI) / 180.0;
+
+            tf2::Quaternion q;
+            q.setRPY(roll, pitch, yaw);
+            q.normalize();
+
+            geometry_msgs::msg::PoseStamped input_pose;
+            input_pose.header.frame_id =
+                "laser_point";  // pose given in laser_point frame
+            input_pose.header.stamp = node->now();
+            input_pose.pose.orientation = tf2::toMsg(q);
+            input_pose.pose.position.x = x;
+            input_pose.pose.position.y = y;
+            input_pose.pose.position.z = z;
+
+            geometry_msgs::msg::PoseStamped transformed_pose;
+            try {
+                transformed_pose = tf_buffer.transform(
+                    input_pose, "ee_link", tf2::durationFromSec(1.0));
+            } catch (tf2::TransformException &ex) {
+                RCLCPP_ERROR(logger, "Transform error: %s", ex.what());
+                continue;  // skip this iteration
+            }
+
+            move_group_interface.setPoseTarget(transformed_pose.pose);
+
+            auto const [success, plan] = [&move_group_interface] {
+                moveit::planning_interface::MoveGroupInterface::Plan msg;
+                auto const ok =
+                    static_cast<bool>(move_group_interface.plan(msg));
+                return std::make_pair(ok, msg);
+            }();
+
+            if (success) {
+                move_group_interface.execute(plan);
+                RCLCPP_INFO(logger, "Moved to custom target pose.");
+            } else {
+                RCLCPP_ERROR(logger, "Planning to target pose failed!");
+            }
+                /**************************** QUITTING OPTION
+     * ***********************************/
+
+        } else if (option == 'q' || option == 'Q')
+            break;
     }
-
-    // 4. Shutdown
-    RCLCPP_INFO(logger, "Shutting down Pose Commander.");
     rclcpp::shutdown();
     return 0;
 }

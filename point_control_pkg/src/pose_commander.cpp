@@ -99,80 +99,87 @@ int main(int argc, char* argv[]) {
             }
 
         } else if (option == 'P' || option == 'p') {
-            std::cout << "\nEnter target (x y z Roll Pitch Yaw in degrees): ";
-            if(!(std::cin >> x >> y >> z >> roll_deg >> pitch_deg >> yaw_deg)) {
-                std::cout << "Invalid input. Clear and retry.\n";
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-                continue;
-            }
+    std::cout << "\nEnter target (x y z Roll Pitch Yaw in degrees): ";
+    if(!(std::cin >> x >> y >> z >> roll_deg >> pitch_deg >> yaw_deg)) {
+        std::cout << "Invalid input. Clear and retry.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+        continue;
+    }
 
-            // Apply polynomial calibration
-            double x_corr = x*1000 - poly_correction(x*1000, y*1000, coeff_x);
-            double y_corr = y*1000 - poly_correction(x*1000, y*1000, coeff_y);
-            double z_corr = z*1000 - poly_correction(x*1000, y*1000, coeff_z);
+    // Apply polynomial calibration
+    double x_corr = x*1000 - poly_correction(x*1000, y*1000, coeff_x);
+    double y_corr = y*1000 - poly_correction(x*1000, y*1000, coeff_y);
+    double z_corr = z*1000 - poly_correction(x*1000, y*1000, coeff_z);
 
-            // Safety check
-            if (x_corr<X_MIN || x_corr>X_MAX || y_corr<Y_MIN || y_corr>Y_MAX || z_corr<Z_MIN || z_corr>Z_MAX) {
-                RCLCPP_WARN(logger,"Corrected pose is OUT OF BOUNDS! Command aborted.");
-                continue;
-            }
+    // Safety check
+    // if (x_corr<X_MIN || x_corr>X_MAX || y_corr<Y_MIN || y_corr>Y_MAX || z_corr<Z_MIN || z_corr>Z_MAX) {
+    //     RCLCPP_WARN(logger,"Corrected pose is OUT OF BOUNDS! Command aborted.");
+    //     continue;
+    // }
 
-            double roll = roll_deg * M_PI/180.0;
-            double pitch = pitch_deg * M_PI/180.0;
-            double yaw = yaw_deg * M_PI/180.0;
+    double roll = roll_deg * M_PI/180.0;
+    double pitch = pitch_deg * M_PI/180.0;
+    double yaw = yaw_deg * M_PI/180.0;
 
-            tf2::Quaternion q_laser;
-            q_laser.setRPY(roll,pitch,yaw);
-            q_laser.normalize();
+    tf2::Quaternion q_laser;
+    q_laser.setRPY(roll,pitch,yaw);
+    q_laser.normalize();
 
-            geometry_msgs::msg::PoseStamped desired_laser_base;
-            desired_laser_base.header.frame_id = "base_link";
-            desired_laser_base.header.stamp = node->now();
-            desired_laser_base.pose.position.x = x_corr/1000;
-            desired_laser_base.pose.position.y = y_corr/1000;
-            desired_laser_base.pose.position.z = z_corr/1000;
-            desired_laser_base.pose.orientation = tf2::toMsg(q_laser);
+    geometry_msgs::msg::PoseStamped desired_laser_base;
+    desired_laser_base.header.frame_id = "world";  // <-- Changed to world
+    desired_laser_base.header.stamp = node->now();
+    desired_laser_base.pose.position.x = x_corr/1000;
+    desired_laser_base.pose.position.y = y_corr/1000;
+    desired_laser_base.pose.position.z = z_corr/1000;
+    desired_laser_base.pose.orientation = tf2::toMsg(q_laser);
 
-            geometry_msgs::msg::TransformStamped t_ee_laser;
-            try {
-                t_ee_laser = tf_buffer.lookupTransform(ee_link,"laser_point",tf2::TimePointZero,1s);
-            } catch(const tf2::TransformException& ex) {
-                RCLCPP_ERROR(logger,"TF lookup failed: %s", ex.what());
-                continue;
-            }
+    // Transform desired pose to base_link frame
+    geometry_msgs::msg::PoseStamped desired_laser_base_in_base;
+    try {
+        desired_laser_base_in_base = tf_buffer.transform(desired_laser_base, "base_link", tf2::durationFromSec(1.0));
+    } catch (const tf2::TransformException &ex) {
+        RCLCPP_ERROR(logger, "Transform from Abb_dummy_base to base_link failed: %s", ex.what());
+        continue;
+    }
 
-            tf2::Transform tf_ee_laser;
-            tf2::fromMsg(t_ee_laser.transform, tf_ee_laser);
-            tf2::Transform tf_inv_ee_laser = tf_ee_laser.inverse();
+    geometry_msgs::msg::TransformStamped t_ee_laser;
+    try {
+        t_ee_laser = tf_buffer.lookupTransform(ee_link,"laser_point",tf2::TimePointZero,1s);
+    } catch(const tf2::TransformException& ex) {
+        RCLCPP_ERROR(logger,"TF lookup failed: %s", ex.what());
+        continue;
+    }
 
-            tf2::Transform tf_desired_laser_base;
-            tf2::fromMsg(desired_laser_base.pose, tf_desired_laser_base);
-            tf2::Transform tf_desired_ee_base = tf_desired_laser_base * tf_inv_ee_laser;
+    tf2::Transform tf_ee_laser;
+    tf2::fromMsg(t_ee_laser.transform, tf_ee_laser);
+    tf2::Transform tf_inv_ee_laser = tf_ee_laser.inverse();
 
-            geometry_msgs::msg::PoseStamped ee_pose_base;
-            ee_pose_base.header.frame_id = "base_link";
-            ee_pose_base.header.stamp = node->now();
-            tf2::toMsg(tf_desired_ee_base, ee_pose_base.pose);
+    tf2::Transform tf_desired_laser_base;
+    tf2::fromMsg(desired_laser_base_in_base.pose, tf_desired_laser_base);  // <-- Use transformed pose
+    tf2::Transform tf_desired_ee_base = tf_desired_laser_base * tf_inv_ee_laser;
 
-            move_group_interface.clearPoseTargets();
-            move_group_interface.setStartStateToCurrentState();
-            move_group_interface.setPoseTarget(ee_pose_base);
+    geometry_msgs::msg::PoseStamped ee_pose_base;
+    ee_pose_base.header.frame_id = "base_link";
+    ee_pose_base.header.stamp = node->now();
+    tf2::toMsg(tf_desired_ee_base, ee_pose_base.pose);
 
-            MoveGroupInterface::Plan plan;
-            bool success = static_cast<bool>(move_group_interface.plan(plan));
-            if(success) {
-                move_group_interface.execute(plan);
-                move_group_interface.stop();
-                move_group_interface.clearPoseTargets();
-                RCLCPP_INFO(logger,"Moved laser to target point.");
-            } else {
-                RCLCPP_ERROR(logger,"Planning failed! Check IK and reach.");
-            }
+    move_group_interface.clearPoseTargets();
+    move_group_interface.setStartStateToCurrentState();
+    move_group_interface.setPoseTarget(ee_pose_base);
 
-        } else if (option=='Q' || option=='q') {
-            break;
-        }
+    MoveGroupInterface::Plan plan;
+    bool success = static_cast<bool>(move_group_interface.plan(plan));
+    if(success) {
+        move_group_interface.execute(plan);
+        move_group_interface.stop();
+        move_group_interface.clearPoseTargets();
+        RCLCPP_INFO(logger,"Moved laser to target point.");
+    } else {
+        RCLCPP_ERROR(logger,"Planning failed! Check IK and reach.");
+    }
+}
+
     }
 
     rclcpp::shutdown();

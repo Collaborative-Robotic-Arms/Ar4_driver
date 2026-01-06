@@ -11,270 +11,100 @@
         <origin xyz="0.0 -0.00 0.0" rpy="3.14 3.14 0"/>
     </joint>
 
-
-  <link
-    name="ar4_camera_fixation">
-    <inertial>
-      <origin
-        xyz="7.8968E-07 0.060697 -0.0122"
-        rpy="0 0 0" />
-      <mass
-        value="0.13499" />
-      <inertia
-        ixx="0.00020887"
-        ixy="6.9288E-11"
-        ixz="-1.3853E-10"
-        iyy="8.1388E-05"
-        iyz="2.4119E-05"
-        izz="0.00018454" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera_fixation.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera_fixation.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <link
-    name="ar4_camera_link">
-    <inertial>
-      <origin
-        xyz="-0.012709 -0.00021479 -0.0085965"
-        rpy="0 0 0" />
-      <mass
-        value="0.0052682" />
-      <inertia
-        ixx="5.1663E-07"
-        ixy="-1.3226E-10"
-        ixz="2.4931E-10"
-        iyy="3.6133E-07"
-        iyz="-8.4204E-10"
-        izz="1.7255E-07" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera.STL" />
-      </geometry>
-    </collision>
-  </link>
-
-  <joint
-    name="camera_mount"
-    type="fixed">
-    <origin
-      xyz="0.00025 0.09897 0.01673"
-      rpy="-1.5708 -1.5708 0" />
-    <parent
-      link="ar4_camera_fixation" />
-    <child
-      link="ar4_camera_link" />
-    <axis
-      xyz="0 0 0" />
-  </joint>
-
-
-
-
-
-
-
-
-
-
-
-
-<!--     
-  <link
-    name="ar4_camera_fixation">
-    <inertial>
-      <origin
-        xyz="-5.43071216944219E-07 0.0610175397843626 0.0278321654677833"
-        rpy="0 0 0" />
-      <mass
-        value="0.111512757258877" />
-      <inertia
-        ixx="0.000186503471337719"
-        ixy="-1.69626348304093E-08"
-        ixz="4.24161109771058E-10"
-        iyy="8.30008082027743E-05"
-        iyz="-4.486315676084E-05"
-        izz="0.000159890419329594" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-        filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera_fixation.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-        filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera_fixation.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <link
-    name="ar4_camera_link">
-    <inertial>
-      <origin
-        xyz="-0.000214789208294226 -0.00859653380921056 -0.0127088225414887"
-        rpy="0 0 0" />
-      <mass
-        value="0.00526823039045375" />
-      <inertia
-        ixx="3.61325460574644E-07"
-        ixy="-8.42039670403038E-10"
-        ixz="-1.32258782224661E-10"
-        iyy="1.72552909734866E-07"
-        iyz="2.49313101261162E-10"
-        izz="5.16628342181524E-07" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-        filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-        filename="file://$(find annin_ar4_description)/meshes/ar4_camera/camera.STL" />
-      </geometry>
-    </collision>
-  </link>
-
-  <joint
-    name="camera_mount"
-    type="fixed">
-    <origin
-      xyz="0.00025 0.09397 0.06673"
-      rpy="-1.57 -1.57 0" />
-    <parent
-      link="ar4_camera_fixation" />
-    <child
-      link="ar4_camera_link" />
-    <axis
-      xyz="0 0 0" />
-  </joint> -->
-
-    <gazebo reference="ar4_camera_link">
-        <sensor name="cameraAR4" type="camera">
-        <always_on>true</always_on>
-        <update_rate>30.0</update_rate>
-        <visualize>true</visualize>
-        <topic>/cameraAR4/image_raw</topic>
-        <camera>
-            <camera_info_topic>/cameraAR4/camera_info</camera_info_topic>
-            <horizontal_fov>1.39626</horizontal_fov>
-            <image>
-            <width>640</width>
-            <height>480</height>
-            <format>R8G8B8</format>
-            </image>
-            <clip>
-            <near>0.02</near>
-            <far>300</far>
-            </clip>
-        </camera>
-
-        <gz_frame_id>ar4_camera_link</gz_frame_id>
-        </sensor>
-    </gazebo>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-    <link name="camera_link_ar4">
+    <link name="ar4_camera_fixation">
+        <inertial>
+            <origin xyz="-2.25905522780595E-05 0.0537995083436942 -0.00156455304641786" rpy="0 0 0" />
+            <mass value="0.0401247162922868" />
+            <inertia
+                ixx="5.49212101113179E-05"
+                ixy="2.90558363997002E-10"
+                ixz="-3.68770799633043E-11"
+                iyy="9.32817358647367E-06"
+                iyz="5.59880994216139E-06"
+                izz="6.12576456021184E-05" />
+        </inertial>
         <visual>
-        <geometry>
-            <box size="0.01 0.01 0.01"/>
-        </geometry>
-        <material name="red">
-            <color rgba="1 0 0 1"/>
-        </material>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_camera/Camera_fixator_Link.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
         </visual>
         <collision>
-        <geometry>
-            <box size="0.01 0.01 0.01"/>
-        </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_camera/Camera_fixator_Link.STL" />
+            </geometry>
         </collision>
-        <inertial>
-        <mass value="0.01"/>
-        <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-        </inertial>
-    </link> -->
+    </link>
 
-    
+    <link name="ar4_camera_link">
+        <inertial>
+            <origin xyz="-0.000221896790492657 -0.00868273060634515 -0.0127107454549502" rpy="0 0 0" />
+            <mass value="0.00526823017535" />
+            <inertia
+                ixx="3.61325460574137E-07"
+                ixy="-8.42039670403475E-10"
+                ixz="-1.32258782226786E-10"
+                iyy="1.72552909734487E-07"
+                iyz="2.49313101275225E-10"
+                izz="5.16628342180616E-07" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_camera/Camera_link.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="file://$(find annin_ar4_description)/meshes/ar4_camera/Camera_link.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="camera_mount" type="fixed">
+        <origin xyz="0.00025711 0.090556 0.011732" rpy="0 0 0" />
+        <parent link="ar4_camera_fixation" />
+        <child link="ar4_camera_link" />
+    </joint>
+
+    <link name="ar4_camera_optical_link" />
+
+    <joint name="ar4_camera_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 -1.57079632679 -1.57079632679" />
+        <parent link="ar4_camera_link" />
+        <child link="ar4_camera_optical_link" />
+    </joint>
+
+    <gazebo reference="ar4_camera_optical_link">
+        <sensor name="cameraAR4" type="camera">
+            <always_on>true</always_on>
+            <update_rate>30.0</update_rate>
+            <visualize>true</visualize>
+            <topic>/cameraAR4/image_raw</topic>
+            <camera>
+                <camera_info_topic>/cameraAR4/camera_info</camera_info_topic>
+                <horizontal_fov>1.39626</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.02</near>
+                    <far>300</far>
+                </clip>
+            </camera>
+            <gz_frame_id>ar4_camera_optical_link</gz_frame_id>
+        </sensor>
+    </gazebo>
 
     </xacro:macro>
 </robot>

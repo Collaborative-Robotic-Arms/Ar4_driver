@@ -84,14 +84,9 @@
     </joint>
 
     <gazebo reference="ar4_camera_optical_link">
-        <sensor name="cameraAR4" type="camera">
-            <always_on>true</always_on>
-            <update_rate>30.0</update_rate>
-            <visualize>true</visualize>
-            <topic>/cameraAR4/image_raw</topic>
+        <sensor name="cameraAR4" type="wide_angle_camera">
             <camera>
-                <camera_info_topic>/cameraAR4/camera_info</camera_info_topic>
-                <horizontal_fov>1.39626</horizontal_fov>
+                <horizontal_fov>2.7925</horizontal_fov>
                 <image>
                     <width>640</width>
                     <height>480</height>
@@ -101,7 +96,20 @@
                     <near>0.02</near>
                     <far>300</far>
                 </clip>
+                
+                <lens>
+                    <type>stereographic</type>
+                    <scale_to_hfov>true</scale_to_hfov>
+                    <cutoff_angle>1.39626</cutoff_angle> <env_texture_size>512</env_texture_size>
+                </lens>
             </camera>
+            
+            <always_on>1</always_on>
+            <update_rate>30</update_rate>
+            <visualize>true</visualize>
+            
+            <topic>cameraAR4/image_raw</topic>
+            
             <gz_frame_id>ar4_camera_optical_link</gz_frame_id>
         </sensor>
     </gazebo>

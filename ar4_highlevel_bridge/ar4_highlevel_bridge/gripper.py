@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Bool
+from std_srvs.srv import SetBool
 import serial
 import time
 
@@ -14,10 +15,9 @@ class SimpleServoSmartSweep(Node):
         self.servo_index = 0
         
         # --- State Tracking ---
-        self.last_trigger_state = None  # To detect True/False changes
         self.current_angle = 0          # To remember where the servo is
-        self.target_angle_true = 30     # Target when True
-        self.target_angle_false = 0     # Target when False
+        self.target_angle_true = 30     # Target when True (Open)
+        self.target_angle_false = 20     # Target when False (Close)
         self.step_delay = 0.05          # Seconds per degree (0.05s * 30deg = 1.5s move)
 
         # --- Setup Serial ---
@@ -33,13 +33,14 @@ class SimpleServoSmartSweep(Node):
         except serial.SerialException as e:
             self.get_logger().error(f'Failed to connect to serial: {e}')
 
-        # --- Subscriber ---
-        self.subscription = self.create_subscription(
-            Bool,
-            '/servo_trigger',
-            self.listener_callback,
-            10
+        # --- Service Server ---
+        # Matches the client in ar4_task_server.cpp: "ar4_gripper/set"
+        self.srv = self.create_service(
+            SetBool,
+            'ar4_gripper/set',
+            self.gripper_service_callback
         )
+        self.get_logger().info('AR4 Gripper Service Ready.')
 
     def send_serial_command(self, angle):
         """Helper to send the raw command string"""
@@ -53,7 +54,8 @@ class SimpleServoSmartSweep(Node):
     def perform_sweep(self, target):
         """Sweeps from current_angle to target_angle slowly"""
         if self.current_angle == target:
-            return
+            self.get_logger().info('Servo already at target angle.')
+            return True
 
         self.get_logger().info(f'Sweeping from {self.current_angle} to {target}...')
 
@@ -69,23 +71,28 @@ class SimpleServoSmartSweep(Node):
         # Update our memory of where the servo is
         self.current_angle = target
         self.get_logger().info(f'Reached {target} degrees.')
+        return True
 
-    def listener_callback(self, msg):
-        if self.ser is None:
-            return
+    def gripper_service_callback(self, request, response):
+        if self.ser is None or not self.ser.is_open:
+            self.get_logger().error("Cannot execute command: Serial connection is down.")
+            response.success = False
+            response.message = "Serial connection down."
+            return response
 
-        # Edge Detection: Only act if the boolean value CHANGES
-        if msg.data == self.last_trigger_state:
-            return
-        
-        self.last_trigger_state = msg.data
-
-        if msg.data:
-            # === TRUE received: Sweep UP to 30 ===
+        if request.data:
+            # === TRUE received: OPEN gripper (Sweep UP to 30) ===
+            self.get_logger().info('Service called: OPEN Gripper')
             self.perform_sweep(self.target_angle_true)
+            response.message = "Gripper opened successfully."
         else:
-            # === FALSE received: Sweep DOWN to 0 ===
+            # === FALSE received: CLOSE gripper (Sweep DOWN to 0) ===
+            self.get_logger().info('Service called: CLOSE Gripper')
             self.perform_sweep(self.target_angle_false)
+            response.message = "Gripper closed successfully."
+
+        response.success = True
+        return response
 
     def destroy_node(self):
         if self.ser and self.ser.is_open:

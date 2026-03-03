@@ -58,7 +58,7 @@ std::map<String, const int*> REST_MOTOR_STEPS;
 const int REST_MOTOR_STEPS_MK1[] = {7555, 2333, 4944, 7049, 2295, 3431};
 const int REST_MOTOR_STEPS_MK2[] = {7555, 2333, 4944, 7049, 2295, 3431};
 //const int REST_MOTOR_STEPS_MK3[] = {7666, 2333, 4499, 9084, 2295, 4177}; // { +44.4444, 2*55.555, 0, 49.7777, -8*21.866,0 } 
-const int REST_MOTOR_STEPS_MK3[] = {7459, 2444.1111, 4554, 9133.7777, 4130.78769776, 4177};
+const int REST_MOTOR_STEPS_MK3[] = {7459, 2444, 4415, 9133, 4086, 4177};
 
 enum SM { STATE_TRAJ, STATE_ERR };
 SM STATE = STATE_TRAJ;
@@ -249,10 +249,11 @@ int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
-void readMotorSteps(int* motorSteps) {
-    for (int i = 0; i < NUM_JOINTS; ++i) {
-        motorSteps[i] = encPos[i].read() / ENC_MULT[i];
-    }
+void readMotorSteps(long* motorSteps) {
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    long raw = encPos[i].read();
+    motorSteps[i] = lround((double)raw / (double)ENC_MULT[i]);
+  }
 }
 
 void encStepsToJointPos(int* encSteps, double* jointPos) {
@@ -309,7 +310,7 @@ void ParseMessage(String& inData, double* cmdJointPos) {
 void MoveVelocity(String inData) {
     double cmdJointVel[NUM_JOINTS];
     ParseMessage(inData, cmdJointVel);
-
+    
     for (int i = 0; i < NUM_JOINTS; i++) {
         if (abs(cmdJointVel[i]) > JOINT_MAX_SPEED[i]) {
             Serial.printf("DB: joint %c speed %f > %f, clipping.\n",

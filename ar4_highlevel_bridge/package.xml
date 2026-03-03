@@ -1,28 +1,20 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>point_control_pkg</name>
+  <name>ar4_highlevel_bridge</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="yahiam.raouf03@gmail.com">yahia-raouf</maintainer>
+  <maintainer email="omar.msattar@gmail.com">omar-magdy</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>moveit_ros_planning_interface</depend>
-  <depend>tf2_geometry_msgs</depend>
-  <depend>libcurl4-openssl-dev</depend>
-  <depend>control_msgs</depend>
-  <depend>moveit_msgs</depend>
-  <depend>supervisor_package</depend>
   <depend>rclcpp_action</depend>
-  <member_of_group>rosidl_interface_packages</member_of_group>
-  
-
-  <exec_depend>launch</exec_depend>
-  <exec_depend>launch_ros</exec_depend>
-  <exec_depend>rclpy</exec_depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>dual_arms_msgs</depend>
+  <depend>moveit_ros_planning_interface</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

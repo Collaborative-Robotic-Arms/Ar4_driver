@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://wiki.ros.org/xacro" name="mk3">
-  
-  <xacro:property name="ar_model" value="mk3" />
-
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg ar_model)">
   <xacro:arg name="tf_prefix" default="" />
   <xacro:arg name="include_gripper" default="true" />
 
@@ -11,27 +8,20 @@
 
   <link name="world" />
 
-  <link name="Abb_dummy_base" />
+  <link name="ABB_base_link" />
 
-  <joint name="ABB_base_joint" type="fixed">
+  <joint name="ABB_base_link_to_world_joint" type="fixed">
     <parent link="world" />
-    <child link="Abb_dummy_base" />
-    <origin xyz="0 -1.110 0" rpy="0 0 0" />
+    <child link="ABB_base_link" />
+    <origin xyz="0 -1.110
+      0" rpy="0 0 1.57079" />
   </joint>
 
-  <xacro:ar_robot
-    tf_prefix="$(arg tf_prefix)"
-    parent="world"
-    
-    robot_parameters_file="$(find annin_ar4_description)/config/${ar_model}.yaml"
-  >
+  <xacro:ar_robot tf_prefix="$(arg tf_prefix)" parent="world" robot_parameters_file="$(find annin_ar4_description)/config/$(arg ar_model).yaml">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:ar_robot>
 
   <xacro:if value="$(arg include_gripper)">
-    <xacro:ar_gripper
-      tf_prefix="$(arg tf_prefix)"
-      parent="$(arg tf_prefix)ee_link"
-    />
+    <xacro:ar_gripper tf_prefix="$(arg tf_prefix)" parent="$(arg tf_prefix)ee_link" />
   </xacro:if>
 </robot>

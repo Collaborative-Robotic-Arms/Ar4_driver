@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<library path="ar4_ar_manipulator_moveit_ikfast_plugin">
+  <class name="ar4_ar_manipulator/IKFastKinematicsPlugin" type="ar4_ar_manipulator::IKFastKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
+    <description>IKFast61 plugin for closed-form kinematics of ar4 ar_manipulator</description>
+  </class>
+</library>

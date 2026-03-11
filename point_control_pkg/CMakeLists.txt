@@ -61,9 +61,5 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(PROGRAMS
-  scripts/jog_servo.py
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 ament_package()

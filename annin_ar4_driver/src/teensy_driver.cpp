@@ -26,21 +26,21 @@ bool TeensyDriver::init(std::string ar_model, std::string port, int baudrate,
         static_cast<uint32_t>(baudrate)));
     serial_port_.set_option(boost::asio::serial_port_base::parity(
         boost::asio::serial_port_base::parity::none));
-    //RCLCPP_INFO(logger_, "Successfully connected to serial port %s",
-                // port.c_str());
+    RCLCPP_INFO(logger_, "Successfully connected to serial port %s",
+                port.c_str());
   }
 
   initialised_ = false;
   std::string msg = "STA" + version_ + "B" + ar_model_ + "\n";
 
   while (!initialised_) {
-    //RCLCPP_INFO(logger_, "Waiting for response from Teensy on port %s",
-                // port.c_str());
+    RCLCPP_INFO(logger_, "Waiting for response from Teensy on port %s",
+                port.c_str());
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     exchange(msg);
   }
-  //RCLCPP_INFO(logger_, "Successfully initialised driver on port %s",
-              // port.c_str());
+  RCLCPP_INFO(logger_, "Successfully initialised driver on port %s",
+              port.c_str());
 
   // initialise joint and encoder calibration
   num_joints_ = num_joints;
@@ -134,7 +134,7 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
 
 bool TeensyDriver::calibrateJoints(std::string calib_sequence) {
   std::string outMsg = "JC" + calib_sequence + "\n";
-  // RCLCPP_INFO(logger_, "Sending calibration command: %s", outMsg.c_str());
+  RCLCPP_INFO(logger_, "Sending calibration command: %s", outMsg.c_str());
   return sendCommand(outMsg);
 }
 
@@ -201,7 +201,7 @@ bool TeensyDriver::exchange(std::string outMsg) {
         updateEStopStatus(inMsg);
       } else if (header == "ER") {
         // error message
-        // RCLCPP_INFO(logger_, "ERROR message: %s", inMsg.c_str());
+        RCLCPP_INFO(logger_, "ERROR message: %s", inMsg.c_str());
         return false;
       } else {
         // unknown header
@@ -270,7 +270,7 @@ void TeensyDriver::checkInit(std::string msg) {
 
 void TeensyDriver::updateJointPositions(const std::string msg) {
 
-  //RCLCPP_INFO(logger_, "RAW JP: %s", msg.c_str());
+  RCLCPP_INFO(logger_, "RAW JP: %s", msg.c_str());
 
   parseValuesToVector(msg, joint_positions_deg_);
 
@@ -279,7 +279,7 @@ void TeensyDriver::updateJointPositions(const std::string msg) {
   for (size_t i = 0; i < joint_positions_deg_.size(); i++) {
     ss << "[" << i << "] " << joint_positions_deg_[i] << " ";
   }
-  //RCLCPP_INFO(logger_, "%s", ss.str().c_str());
+  RCLCPP_INFO(logger_, "%s", ss.str().c_str());
 }
 
 void TeensyDriver::updateJointVelocities(const std::string msg) {

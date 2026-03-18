@@ -16,8 +16,8 @@ class SimpleServoSmartSweep(Node):
         
         # --- State Tracking ---
         self.current_angle = 0          # To remember where the servo is
-        self.target_angle_true = 30     # Target when True (Open)
-        self.target_angle_false = 20     # Target when False (Close)
+        self.target_angle_true = 25     # Target when True (Open)
+        self.target_angle_false = 3     # Target when False (Close)
         self.step_delay = 0.05          # Seconds per degree (0.05s * 30deg = 1.5s move)
 
         # --- Setup Serial ---

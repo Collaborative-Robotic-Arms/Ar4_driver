@@ -7,7 +7,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "geometry_msgs/msg/pose.hpp"
-
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/time.h>
 // MoveIt
 #include <moveit/move_group_interface/move_group_interface.hpp>
 
@@ -26,7 +28,7 @@ public:
 
     AR4TaskServer() : Node("ar4_task_server")
     {   
-        this->declare_parameter("use_sim", true); 
+        this->declare_parameter("use_sim", false); 
         this->use_sim_ = this->get_parameter("use_sim").as_bool();
         
         if (use_sim_) RCLCPP_INFO(this->get_logger(), "Starting in SIMULATION MODE.");
@@ -44,10 +46,20 @@ public:
 
     void init()
     {
+        auto tf_buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+        auto tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
+        
+        RCLCPP_INFO(this->get_logger(), "Waiting for 'world' frame to appear in TF...");
+        while (rclcpp::ok()) {
+            if (tf_buffer->canTransform("world", "abb_table", tf2::TimePointZero)) {
+                RCLCPP_INFO(this->get_logger(), "'world' frame found. Initializing MoveIt...");
+                break;
+            }
+            rclcpp::sleep_for(std::chrono::milliseconds(200));
+        }
         static const std::string ROBOT_GROUP_NAME = "ar_manipulator"; 
         try {
             move_group_ = std::make_shared<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), ROBOT_GROUP_NAME);
-            move_group_->setPlanningPipelineId("move_group");
             move_group_->setMaxVelocityScalingFactor(0.4);
             move_group_->setMaxAccelerationScalingFactor(0.3);
             move_group_->setGoalPositionTolerance(0.01);
@@ -55,7 +67,6 @@ public:
             move_group_->setPlanningTime(10.0); 
             move_group_->setPoseReferenceFrame("abb_table");
             move_group_->setEndEffectorLink("ar4_ee_link"); 
-            move_group_->setGoalJointTolerance(0.01);
             move_group_->setWorkspace(-1.5, -1.5, -0.5, 1.5, 1.5, 2.5);
 
             RCLCPP_INFO(this->get_logger(), "MoveGroupInterface Ready for AR4.");
@@ -196,15 +207,30 @@ private:
     {
         if (goal_handle->is_canceling()) return false;
 
+        // 1. Wrap the raw Pose in a PoseStamped to enforce the table frame
+        geometry_msgs::msg::PoseStamped stamped_target;
+        stamped_target.header.frame_id = "abb_table";
+        stamped_target.pose = target;
+
+        // 2. Pass the explicitly framed pose to MoveIt
+        move_group_->setPoseTarget(stamped_target);
+
+        // ==========================================================
+        // --- NEW DEBUG LOGGING: Verify MoveIt's Frame Knowledge ---
+        // ==========================================================
+        RCLCPP_INFO(this->get_logger(), "--- MOVEIT FRAME DIAGNOSTICS ---");
+        RCLCPP_INFO(this->get_logger(), "1. Target Pose Frame set to: '%s'", stamped_target.header.frame_id.c_str());
+        RCLCPP_INFO(this->get_logger(), "2. MoveGroup Pose Reference Frame: '%s'", move_group_->getPoseReferenceFrame().c_str());
+        RCLCPP_INFO(this->get_logger(), "3. MoveGroup Planning Frame (Root): '%s'", move_group_->getPlanningFrame().c_str());
+        RCLCPP_INFO(this->get_logger(), "4. MoveGroup End-Effector Link: '%s'", move_group_->getEndEffectorLink().c_str());
+        RCLCPP_INFO(this->get_logger(), "--------------------------------");
+        
         RCLCPP_INFO(this->get_logger(), 
             "Targeting Pose -> P(x:%.3f, y:%.3f, z:%.3f) | Q(w:%.2f, x:%.2f, y:%.2f, z:%.2f)", 
             target.position.x, target.position.y, target.position.z, 
             target.orientation.w, target.orientation.x, target.orientation.y, target.orientation.z);
 
-        move_group_->setPoseTarget(target);
-        move_group_->setStartStateToCurrentState();
         moveit::planning_interface::MoveGroupInterface::Plan plan;
-        
         auto error_code = move_group_->plan(plan);
         
         // CRITICAL: Check if Supervisor canceled us WHILE we were doing the heavy math
@@ -242,7 +268,6 @@ private:
         RCLCPP_INFO(this->get_logger(), "Targeting Named Pose -> %s", name.c_str());
         
         move_group_->setNamedTarget(name);
-        move_group_->setStartStateToCurrentState();
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         
         auto error_code = move_group_->plan(plan);

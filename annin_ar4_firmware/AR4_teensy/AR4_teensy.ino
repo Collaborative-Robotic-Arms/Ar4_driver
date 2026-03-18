@@ -58,7 +58,7 @@ std::map<String, const int*> REST_MOTOR_STEPS;
 const int REST_MOTOR_STEPS_MK1[] = { 7555, 2333, 4944, 7049, 2295, 3431 };
 const int REST_MOTOR_STEPS_MK2[] = { 7555, 2333, 4944, 7049, 2295, 3431 };
 //const int REST_MOTOR_STEPS_MK3[] = {7666, 2333, 4499, 9084, 2295, 4177}; // { +44.4444, 2*55.555, 0, 49.7777, -8*21.866,0 } 
-const int REST_MOTOR_STEPS_MK3[] = { 7372, 2444, 4415, 9133, 4086, 4177 };
+const int REST_MOTOR_STEPS_MK3[] = { 7322, 2444, 4415, 9133, 4086, 4177 };
 
 enum SM { STATE_TRAJ, STATE_ERR };
 SM STATE = STATE_TRAJ;
@@ -343,7 +343,7 @@ void MoveTo(String inData, int* motorSteps) {
     ParseMessage(inData, cmdJointPos);
 
     for (int i = 0; i < NUM_JOINTS; i++) {
-        if (abs(cmdJointPos[i]) > 380.0) {
+        if (abs(cmdJointPos[i] > 380.0)) {
             Serial.printf("ER: panic, joint %c value %f out of range\n",
                 JOINT_NAMES[i], cmdJointPos[i]);
             return;

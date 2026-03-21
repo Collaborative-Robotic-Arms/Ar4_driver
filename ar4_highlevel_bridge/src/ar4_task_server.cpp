@@ -17,6 +17,10 @@
 #include "dual_arms_msgs/action/execute_task.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 
+// Controller Interfaces
+#include "control_msgs/action/follow_joint_trajectory.hpp"
+#include "trajectory_msgs/msg/joint_trajectory_point.hpp"
+
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -25,6 +29,7 @@ class AR4TaskServer : public rclcpp::Node
 public:
     using ExecuteTask = dual_arms_msgs::action::ExecuteTask;
     using GoalHandleExecuteTask = rclcpp_action::ServerGoalHandle<ExecuteTask>;
+    using TrajectoryAction = control_msgs::action::FollowJointTrajectory;
 
     AR4TaskServer() : Node("ar4_task_server")
     {   
@@ -33,6 +38,13 @@ public:
         
         if (use_sim_) RCLCPP_INFO(this->get_logger(), "Starting in SIMULATION MODE.");
         else RCLCPP_INFO(this->get_logger(), "Starting in REAL HARDWARE MODE.");
+        
+        if (use_sim_) {
+            // NOTE: Update this name if your AR4 Gazebo controller is named differently
+            this->sim_gripper_client_ = rclcpp_action::create_client<TrajectoryAction>(
+                this, "/ar4_gripper_controller/follow_joint_trajectory" 
+            );
+        }
 
         this->action_server_ = rclcpp_action::create_server<ExecuteTask>(
             this, "ar4_control", 
@@ -80,6 +92,7 @@ private:
     rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr gripper_client_;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
     bool use_sim_; 
+    rclcpp_action::Client<TrajectoryAction>::SharedPtr sim_gripper_client_;
 
     // Helper function to decode MoveIt errors
     std::string decode_moveit_error(int32_t code) {
@@ -193,6 +206,37 @@ private:
         {
             if (!move_to_named_target("home", goal_handle)) { HANDLE_FAILURE("HOME: Failed to reach home"); }
         }
+        else if (goal->task_type == "INTERMEDIATE_GIVE")
+        {
+            // Move to handover zone and wait (keep gripper closed holding the brick)
+            feedback->current_status = "MOVING_TO_HANDOVER_ZONE";
+            goal_handle->publish_feedback(feedback);
+            if (!move_to_pose(goal->target_pose, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_GIVE: Failed to reach pose"); }
+        }
+        else if (goal->task_type == "INTERMEDIATE_TAKE")
+        {
+            // 1. Open gripper to prepare for handover
+            feedback->current_status = "OPENING_GRIPPER_FOR_TAKE";
+            goal_handle->publish_feedback(feedback);
+            if (!control_gripper(true, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to open gripper"); }
+
+            // 2. Move precisely to the grasp point on the hovering brick
+            feedback->current_status = "MOVING_TO_HANDOVER_GRASP";
+            goal_handle->publish_feedback(feedback);
+            if (!move_to_pose(goal->target_pose, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to reach pose"); }
+
+            // 3. Close gripper to secure the brick
+            feedback->current_status = "CLOSING_GRIPPER_TO_TAKE";
+            goal_handle->publish_feedback(feedback);
+            if (!control_gripper(false, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to grasp"); }
+        }
+        else if (goal->task_type == "RELEASE")
+        {
+            // Tell the giving arm to let go after the taking arm has secured it
+            feedback->current_status = "RELEASING_BRICK";
+            goal_handle->publish_feedback(feedback);
+            if (!control_gripper(true, goal_handle)) { HANDLE_FAILURE("RELEASE: Failed to open gripper"); }
+        }
 
         // If we reach here naturally, ensure we haven't been canceled at the last millisecond
         if (goal_handle->is_canceling()) { HANDLE_FAILURE("Canceled at finish"); }
@@ -230,6 +274,13 @@ private:
             target.position.x, target.position.y, target.position.z, 
             target.orientation.w, target.orientation.x, target.orientation.y, target.orientation.z);
 
+        auto current_state = move_group_->getCurrentState(1.0);
+        if (current_state) {
+            current_state->enforceBounds();
+            move_group_->setStartState(*current_state);
+        } else {
+            move_group_->setStartStateToCurrentState();
+        }
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         auto error_code = move_group_->plan(plan);
         
@@ -268,6 +319,13 @@ private:
         RCLCPP_INFO(this->get_logger(), "Targeting Named Pose -> %s", name.c_str());
         
         move_group_->setNamedTarget(name);
+        auto current_state = move_group_->getCurrentState(1.0);
+        if (current_state) {
+            current_state->enforceBounds();
+            move_group_->setStartState(*current_state);
+        } else {
+            move_group_->setStartStateToCurrentState();
+        }
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         
         auto error_code = move_group_->plan(plan);
@@ -291,16 +349,55 @@ private:
         return false;
     }
 
+    bool send_sim_gripper_command(bool open, std::shared_ptr<GoalHandleExecuteTask> goal_handle)
+    {
+        if (!sim_gripper_client_->wait_for_action_server(std::chrono::seconds(2))) {
+            RCLCPP_WARN(this->get_logger(), "AR4 Sim Gripper Action Server not found! Check controller name.");
+            return true; // Fallback so the state machine doesn't freeze
+        }
+        
+        auto goal_msg = TrajectoryAction::Goal();
+        
+        // IMPORTANT: Update these joint names to match your AR4 Gazebo URDF!
+        goal_msg.trajectory.joint_names = {
+            "ar4_gripper_jaw1_joint", 
+            "ar4_gripper_jaw2_joint"
+        };
+
+        trajectory_msgs::msg::JointTrajectoryPoint point;
+        
+        // Update these positions based on your AR4 URDF joint limits!
+        // Usually, 0.0 is closed, and some small positive number (e.g., 0.015) is open, or vice versa.
+        double pos = open ? 0.0135 : 0.001; 
+        point.positions = {pos, pos};
+        point.time_from_start = rclcpp::Duration::from_seconds(1.0);
+        goal_msg.trajectory.points.push_back(point);
+
+        auto goal_handle_future = sim_gripper_client_->async_send_goal(goal_msg);
+        
+        // Wait for server to accept the goal while monitoring for MTC cancellations
+        while (goal_handle_future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
+            if (goal_handle->is_canceling()) return false;
+        }
+
+        auto action_goal_handle = goal_handle_future.get();
+        if (!action_goal_handle) return false;
+
+        auto result_future = sim_gripper_client_->async_get_result(action_goal_handle);
+        
+        // Wait for the gripper to finish moving while monitoring for MTC cancellations
+        while (result_future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
+            if (goal_handle->is_canceling()) return false;
+        }
+
+        return true;
+    }
+
     bool control_gripper(bool open, std::shared_ptr<GoalHandleExecuteTask> goal_handle)
     {
         if (use_sim_) {
-            RCLCPP_INFO(this->get_logger(), "SIMULATION MODE: Pretending to %s gripper.", open ? "OPEN" : "CLOSE");
-            // Break the sleep into chunks so we can check for cancels instantly
-            for (int i = 0; i < 5; i++) {
-                if (goal_handle->is_canceling()) return false;
-                std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
-            }
-            return true; 
+            RCLCPP_INFO(this->get_logger(), "SIMULATION MODE: Moving AR4 gripper to %s.", open ? "OPEN" : "CLOSE");
+            return send_sim_gripper_command(open, goal_handle);
         }
 
         if (!gripper_client_->wait_for_service(std::chrono::seconds(2))) return false;

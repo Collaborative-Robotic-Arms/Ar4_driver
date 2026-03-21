@@ -13,20 +13,23 @@ find_package(geometry_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(dual_arms_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
+find_package(control_msgs REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 
 add_executable(ar4_task_server src/ar4_task_server.cpp)
 target_include_directories(ar4_task_server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 target_compile_features(ar4_task_server PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-ament_target_dependencies(
-  ar4_task_server
-  "rclcpp"
-  "rclcpp_action"
-  "geometry_msgs"
-  "std_srvs"
-  "dual_arms_msgs"
-  "moveit_ros_planning_interface"
+ament_target_dependencies(ar4_task_server
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  std_srvs
+  dual_arms_msgs
+  moveit_ros_planning_interface
+  control_msgs
+  trajectory_msgs
 )
 
 install(TARGETS ar4_task_server

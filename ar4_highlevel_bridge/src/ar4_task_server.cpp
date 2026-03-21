@@ -53,6 +53,16 @@ public:
             std::bind(&AR4TaskServer::handle_accepted, this, _1)
         );
 
+        // Create a separate thread group for the service to prevent deadlocks
+        this->service_cb_group_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        
+        this->gripper_service_server_ = this->create_service<std_srvs::srv::SetBool>(
+            "ar4_controller/set_gripper", 
+            std::bind(&AR4TaskServer::handle_gripper_service, this, _1, _2),
+            rmw_qos_profile_services_default,
+            this->service_cb_group_ // <-- Assign the group here
+        );
+
         this->gripper_client_ = this->create_client<std_srvs::srv::SetBool>("ar4_gripper/set");
     }
 
@@ -89,6 +99,8 @@ public:
 
 private:
     rclcpp_action::Server<ExecuteTask>::SharedPtr action_server_;
+    rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr gripper_service_server_;
+    rclcpp::CallbackGroup::SharedPtr service_cb_group_;
     rclcpp::Client<std_srvs::srv::SetBool>::SharedPtr gripper_client_;
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
     bool use_sim_; 
@@ -135,6 +147,19 @@ private:
         RCLCPP_INFO(this->get_logger(), "Cancel requested");
         if (move_group_) move_group_->stop();
         return rclcpp_action::CancelResponse::ACCEPT;
+    }
+
+    void handle_gripper_service(
+        const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+        std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+    {
+        RCLCPP_INFO(this->get_logger(), "MTC/Supervisor requested AR4 Gripper: %s", request->data ? "OPEN" : "CLOSE");
+        
+        // Pass nullptr for the goal_handle since this is a Service, not an Action!
+        bool success = control_gripper(request->data, nullptr);
+        
+        response->success = success;
+        response->message = success ? "Gripper moved successfully" : "Gripper failed to move";
     }
 
     void handle_accepted(const std::shared_ptr<GoalHandleExecuteTask> goal_handle) {
@@ -377,7 +402,7 @@ private:
         
         // Wait for server to accept the goal while monitoring for MTC cancellations
         while (goal_handle_future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
-            if (goal_handle->is_canceling()) return false;
+            if (goal_handle != nullptr && goal_handle->is_canceling()) return false;       
         }
 
         auto action_goal_handle = goal_handle_future.get();
@@ -387,7 +412,7 @@ private:
         
         // Wait for the gripper to finish moving while monitoring for MTC cancellations
         while (result_future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
-            if (goal_handle->is_canceling()) return false;
+            if (goal_handle != nullptr && goal_handle->is_canceling()) return false;
         }
 
         return true;
@@ -414,9 +439,13 @@ private:
 
 int main(int argc, char ** argv) {
     rclcpp::init(argc, argv);
+    auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     auto node = std::make_shared<AR4TaskServer>();
+    
+    executor->add_node(node);
     node->init();
-    rclcpp::spin(node);
+    executor->spin();
+    
     rclcpp::shutdown();
     return 0;
 }

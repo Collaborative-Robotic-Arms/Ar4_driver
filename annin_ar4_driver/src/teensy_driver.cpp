@@ -270,16 +270,16 @@ void TeensyDriver::checkInit(std::string msg) {
 
 void TeensyDriver::updateJointPositions(const std::string msg) {
 
-  RCLCPP_INFO(logger_, "RAW JP: %s", msg.c_str());
+  // RCLCPP_INFO(logger_, "RAW JP: %s", msg.c_str());
 
   parseValuesToVector(msg, joint_positions_deg_);
 
-  std::stringstream ss;
-  ss << "Parsed JP: ";
-  for (size_t i = 0; i < joint_positions_deg_.size(); i++) {
-    ss << "[" << i << "] " << joint_positions_deg_[i] << " ";
-  }
-  RCLCPP_INFO(logger_, "%s", ss.str().c_str());
+  // std::stringstream ss;
+  // ss << "Parsed JP: ";
+  // for (size_t i = 0; i < joint_positions_deg_.size(); i++) {
+  //   ss << "[" << i << "] " << joint_positions_deg_[i] << " ";
+  // }
+  // RCLCPP_INFO(logger_, "%s", ss.str().c_str());
 }
 
 void TeensyDriver::updateJointVelocities(const std::string msg) {

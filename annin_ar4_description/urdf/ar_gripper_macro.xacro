@@ -91,7 +91,7 @@ Stephen Brawner (brawner@gmail.com)
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw1_link" />
       <axis xyz="-1 0 0" />
-      <limit lower="0" upper="0.015" effort="1000" velocity="1.0" />
+      <limit lower="0" upper="0.015" effort="100" velocity="1.0" />
     </joint>
 
 
@@ -100,8 +100,53 @@ Stephen Brawner (brawner@gmail.com)
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw2_link" />
       <axis xyz="1 0 0" />
-      <limit lower="0" upper="0.015" effort="1000" velocity="1.0" />
+      <limit lower="0" upper="0.015" effort="100" velocity="1.0" />
 
     </joint>
+
+    <!-- Gazebo friction properties for gripper jaws -->
+    <gazebo reference="${tf_prefix}gripper_jaw1_link">
+      <surface>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode>
+            <mu>2</mu>
+            <mu2>2</mu2>
+            <slip1>0.0001</slip1>
+            <slip2>0.0001</slip2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <max_vel>0.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+    </gazebo>
+
+    <gazebo reference="${tf_prefix}gripper_jaw2_link">
+      <surface>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode>
+            <mu>2</mu>
+            <mu2>2</mu2>
+            <slip1>0.0001</slip1>
+            <slip2>0.0001</slip2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <max_vel>0.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+    </gazebo>
   </xacro:macro>
 </robot>

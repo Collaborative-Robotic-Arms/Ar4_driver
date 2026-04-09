@@ -33,7 +33,7 @@ class ControllerConfigSubstitution(Substitution):
         with open(file_path_val, "r") as f:
             content = f.read()
 
-        content = content.replace("$(var tf_prefix)", tf_prefix_val)
+        content = content.replace('$(var tf_prefix)', tf_prefix_val)
 
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml")
         temp_file.write(content.encode("utf-8"))
@@ -42,58 +42,40 @@ class ControllerConfigSubstitution(Substitution):
 
 
 def generate_launch_description():
-    ar_model_arg = DeclareLaunchArgument(
-        "ar_model",
-        default_value="mk3",
-        choices=["mk1", "mk2", "mk3"],
-        description="Model of AR4",
-    )
+    ar_model_arg = DeclareLaunchArgument("ar_model",
+                                         default_value="mk3",
+                                         choices=["mk1", "mk2", "mk3"],
+                                         description="Model of AR4")
     ar_model_config = LaunchConfiguration("ar_model")
-    tf_prefix_arg = DeclareLaunchArgument(
-        "tf_prefix", default_value="", description="Prefix for AR4 tf_tree"
-    )
+    tf_prefix_arg = DeclareLaunchArgument("tf_prefix",
+                                          default_value="",
+                                          description="Prefix for AR4 tf_tree")
     tf_prefix = LaunchConfiguration("tf_prefix")
 
     initial_joint_controllers = ControllerConfigSubstitution(
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"]
-        ),
-        tf_prefix=tf_prefix,
-    )
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_driver"), "config", "controllers.yaml"
+        ]),
+        tf_prefix=tf_prefix)
 
-    include_gripper_arg = DeclareLaunchArgument(
-        "include_gripper",
-        default_value="True",
-        description="Run the servo gripper",
-        choices=["True", "False"],
-    )
-    include_gripper_config = LaunchConfiguration("include_gripper")
-
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("annin_ar4_description"),
-                    "urdf",
-                    "ar_gazebo.urdf.xacro",
-                ]
-            ),
-            " ",
-            "ar_model:=",
-            ar_model_config,
-            " ",
-            "tf_prefix:=",
-            tf_prefix,
-            " ",
-            "simulation_controllers:=",
-            initial_joint_controllers,
-            " ",
-            "include_gripper:=",
-            include_gripper_config,
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_description"),
+            "urdf",
+            "ar_gazebo.urdf.xacro",
+        ]),
+        " ",
+        "ar_model:=",
+        ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
+        " ",
+        "simulation_controllers:=",
+        initial_joint_controllers,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher_node = Node(
@@ -107,11 +89,8 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_state_broadcaster",
-            "-c",
-            "/controller_manager",
-            "--controller-manager-timeout",
-            "60",
+            "joint_state_broadcaster", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
         ],
     )
 
@@ -120,11 +99,8 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "joint_trajectory_controller",
-            "-c",
-            "/controller_manager",
-            "--controller-manager-timeout",
-            "60",
+            "joint_trajectory_controller", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
         ],
     )
 
@@ -132,36 +108,30 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "gripper_controller",
-            "-c",
-            "/controller_manager",
-            "--controller-manager-timeout",
-            "60",
+            "gripper_controller", "-c", "/controller_manager",
+            "--controller-manager-timeout", "60"
         ],
     )
 
     # Gazebo nodes
-    world = os.path.join(
-        get_package_share_directory("annin_ar4_gazebo"), "worlds", "empty.world"
-    )
+    world = os.path.join(get_package_share_directory('annin_ar4_gazebo'),
+                         'worlds', 'empty.world')
 
     # Bridge
     gazebo_bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
         arguments=["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"],
-        output="screen",
-    )
+        output='screen')
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("ros_gz_sim"), "/launch", "/gz_sim.launch.py"]
-        ),
+            [FindPackageShare("ros_gz_sim"), "/launch", "/gz_sim.launch.py"]),
         launch_arguments={
-            "gz_args": f"-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}",
-            "on_exit_shutdown": "True",
-        }.items(),
-    )
+            'gz_args':
+            f'-r -v 4 --physics-engine gz-physics-bullet-featherstone-plugin {world}',
+            'on_exit_shutdown': 'True'
+        }.items())
 
     # Spawn robot
     gazebo_spawn_robot = Node(
@@ -171,17 +141,14 @@ def generate_launch_description():
         output="screen",
     )
 
-    return LaunchDescription(
-        [
-            ar_model_arg,
-            tf_prefix_arg,
-            include_gripper_arg,
-            gazebo_bridge,
-            gazebo,
-            gazebo_spawn_robot,
-            robot_state_publisher_node,
-            joint_state_broadcaster_spawner,
-            initial_joint_controller_spawner_started,
-            gripper_joint_controller_spawner_started,
-        ]
-    )
+    return LaunchDescription([
+        ar_model_arg,
+        tf_prefix_arg,
+        gazebo_bridge,
+        gazebo,
+        gazebo_spawn_robot,
+        robot_state_publisher_node,
+        joint_state_broadcaster_spawner,
+        initial_joint_controller_spawner_started,
+        gripper_joint_controller_spawner_started,
+    ])

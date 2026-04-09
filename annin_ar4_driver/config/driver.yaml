@@ -13,5 +13,4 @@
 #     - Example: '012','345' for type '1'; '01','23','45' for type '2'
 calib_sequence: '2021435'
 
-velocity_control_enabled: False
-
+velocity_control_enabled: true

@@ -66,7 +66,6 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
     jointPositionStm << std::fixed << std::setprecision(2) << pos_commands[i];
     logInfo += std::to_string(i) + ": " + jointPositionStm.str() + " | ";
   }
-
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 
   // log vel_commands
@@ -76,31 +75,23 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
     jointVelocityStm << std::fixed << std::setprecision(2) << vel_commands[i];
     logInfo += std::to_string(i) + ": " + jointVelocityStm.str() + " | ";
   }
-
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 
   std::string outMsg = "";
   // construct update message
-    if (velocity_control_enabled_) {
+  if (velocity_control_enabled_) {
     outMsg += "MV";
     for (int i = 0; i < num_joints_; ++i) {
-
-        // DEADZONE TO PREVENT DRIFT
-        if (std::fabs(vel_commands[i]) < 1e-3) {
-            vel_commands[i] = 0.0;
-        }
-
-        outMsg += 'A' + i;
-        outMsg += std::to_string(vel_commands[i]);
+      outMsg += 'A' + i;
+      outMsg += std::to_string(vel_commands[i]);
     }
   } else {
     outMsg += "MT";
     for (int i = 0; i < num_joints_; ++i) {
-        outMsg += 'A' + i;
-        outMsg += std::to_string(pos_commands[i]);
+      outMsg += 'A' + i;
+      outMsg += std::to_string(pos_commands[i]);
     }
   }
-
   outMsg += "\n";
 
   // run the communication with board
@@ -111,14 +102,12 @@ void TeensyDriver::update(std::vector<double>& pos_commands,
 
   // print joint_positions
   logInfo = "Joint Pos: ";
-
   for (int i = 0; i < num_joints_; i++) {
     std::stringstream jointPositionStm;
     jointPositionStm << std::fixed << std::setprecision(2)
                      << joint_positions[i];
     logInfo += std::to_string(i) + ": " + jointPositionStm.str() + " | ";
   }
-  
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
 
   // print joint_velocities
@@ -269,17 +258,7 @@ void TeensyDriver::checkInit(std::string msg) {
 }
 
 void TeensyDriver::updateJointPositions(const std::string msg) {
-
-  // RCLCPP_INFO(logger_, "RAW JP: %s", msg.c_str());
-
   parseValuesToVector(msg, joint_positions_deg_);
-
-  // std::stringstream ss;
-  // ss << "Parsed JP: ";
-  // for (size_t i = 0; i < joint_positions_deg_.size(); i++) {
-  //   ss << "[" << i << "] " << joint_positions_deg_[i] << " ";
-  // }
-  // RCLCPP_INFO(logger_, "%s", ss.str().c_str());
 }
 
 void TeensyDriver::updateJointVelocities(const std::string msg) {

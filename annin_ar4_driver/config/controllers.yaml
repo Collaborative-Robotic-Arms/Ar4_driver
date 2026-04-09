@@ -29,16 +29,16 @@
 
     action_monitor_rate: 20.0
     allow_partial_joints_goal: false
-    allow_nonzero_velocity_at_trajectory_end: true
+    allow_nonzero_velocity_at_trajectory_end: false
     constraints:
-      stopped_velocity_tolerance: 0.02
-      goal_time: 0.0
-      $(var tf_prefix)joint_1: { trajectory: 0.2, goal: 0.02 }
-      $(var tf_prefix)joint_2: { trajectory: 0.2, goal: 0.02 }
-      $(var tf_prefix)joint_3: { trajectory: 0.2, goal: 0.02 }
-      $(var tf_prefix)joint_4: { trajectory: 0.2, goal: 0.02 }
-      $(var tf_prefix)joint_5: { trajectory: 0.2, goal: 0.02 }
-      $(var tf_prefix)joint_6: { trajectory: 0.2, goal: 0.02 }
+      stopped_velocity_tolerance: 0.005
+      goal_time: 1.0
+      $(var tf_prefix)joint_1: { trajectory: 0.1, goal: 0.002 }
+      $(var tf_prefix)joint_2: { trajectory: 0.1, goal: 0.002 }
+      $(var tf_prefix)joint_3: { trajectory: 0.1, goal: 0.002 }
+      $(var tf_prefix)joint_4: { trajectory: 0.1, goal: 0.002 }
+      $(var tf_prefix)joint_5: { trajectory: 0.1, goal: 0.002 }
+      $(var tf_prefix)joint_6: { trajectory: 0.1, goal: 0.002 }
 
     gains: # Required because we're controlling a velocity interface
       $(var tf_prefix)joint_1: { p: 10.0, d: 1.0, i: 1.0, i_clamp: 1.0 } # Smaller 'p' term, since ff term does most of the work

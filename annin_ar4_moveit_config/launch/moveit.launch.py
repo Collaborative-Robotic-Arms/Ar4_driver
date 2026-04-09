@@ -37,117 +37,107 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "use_sim_time",
-            default_value="True",
-            description="Make MoveIt use simulation time. This is needed "
-            + "for trajectory planing in simulation.",
-        )
-    )
+            default_value="False",
+            description="Make MoveIt use simulation time. This is needed " +
+            "for trajectory planing in simulation.",
+        ))
     declared_arguments.append(
         DeclareLaunchArgument(
             "tf_prefix",
             default_value="",
             description="Prefix for AR4 tf_tree",
-        )
-    )
+        ))
     declared_arguments.append(
         DeclareLaunchArgument(
             "include_gripper",
             default_value="True",
             description="Run the servo gripper",
             choices=["True", "False"],
-        )
-    )
+        ))
     rviz_config_file_default = PathJoinSubstitution(
-        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"]
-    )
+        [FindPackageShare("annin_ar4_moveit_config"), "rviz", "moveit.rviz"])
     declared_arguments.append(
         DeclareLaunchArgument(
             "rviz_config_file",
             default_value=rviz_config_file_default,
             description="Full path to the RViz configuration file to use",
-        )
-    )
+        ))
     declared_arguments.append(
         DeclareLaunchArgument(
             "ar_model",
             default_value="mk3",
             choices=["mk1", "mk2", "mk3"],
             description="Model of AR4",
-        )
-    )
+        ))
     declared_arguments.append(
         DeclareLaunchArgument(
             "moveit_servo",
             default_value="False",
             choices=["True", "False"],
             description="Run moveit2 servo",
-        )
-    )
+        ))
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"]
-            ),
-            " ",
-            "ar_model:=",
-            ar_model_config,
-            " ",
-            "tf_prefix:=",
-            tf_prefix,
-            " ",
-            "include_gripper:=",
-            include_gripper,
-        ]
-    )
+    robot_description_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_description"), "urdf", "ar.urdf.xacro"
+        ]),
+        " ",
+        "ar_model:=",
+        ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description = {"robot_description": robot_description_content}
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution(
-                [FindPackageShare("annin_ar4_moveit_config"), "srdf", "ar.srdf.xacro"]
-            ),
-            " ",
-            "name:=",
-            ar_model_config,
-            " ",
-            "tf_prefix:=",
-            tf_prefix,
-            " ",
-            "include_gripper:=",
-            include_gripper,
-        ]
-    )
+    robot_description_semantic_content = Command([
+        PathJoinSubstitution([FindExecutable(name="xacro")]),
+        " ",
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"), "srdf",
+            "ar.srdf.xacro"
+        ]),
+        " ",
+        "name:=",
+        ar_model_config,
+        " ",
+        "tf_prefix:=",
+        tf_prefix,
+        " ",
+        "include_gripper:=",
+        include_gripper,
+    ])
     robot_description_semantic = {
         "robot_description_semantic": robot_description_semantic_content
     }
 
     robot_description_kinematics = {
-        "robot_description_kinematics": load_yaml(
+        "robot_description_kinematics":
+        load_yaml(
             "annin_ar4_moveit_config",
             os.path.join("config", "kinematics.yaml"),
         )
     }
 
     joint_limits = ParameterFile(
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "config/joint_limits.yaml"]
-        ),
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/joint_limits.yaml"
+        ]),
         allow_substs=True,
     )
 
     # Planning Configuration
-    ompl_planning_yaml = load_yaml(
-        "annin_ar4_moveit_config", "config/ompl_planning.yaml"
-    )
-    pilz_planning_yaml = load_yaml(
-        "annin_ar4_moveit_config", "config/pilz_planning.yaml"
-    )
+    ompl_planning_yaml = load_yaml("annin_ar4_moveit_config",
+                                   "config/ompl_planning.yaml")
+    pilz_planning_yaml = load_yaml("annin_ar4_moveit_config",
+                                   "config/pilz_planning.yaml")
     planning_pipeline_config = {
         "default_planning_pipeline": "ompl",
         "planning_pipelines": ["ompl", "pilz"],
@@ -157,13 +147,15 @@ def generate_launch_description():
 
     # Trajectory Execution Configuration
     moveit_controller_manager = {
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+        "moveit_controller_manager":
+        "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
     moveit_controllers = ParameterFile(
-        PathJoinSubstitution(
-            [FindPackageShare("annin_ar4_moveit_config"), "config/controllers.yaml"]
-        ),
+        PathJoinSubstitution([
+            FindPackageShare("annin_ar4_moveit_config"),
+            "config/controllers.yaml"
+        ]),
         allow_substs=True,
     )
 
@@ -198,7 +190,9 @@ def generate_launch_description():
             moveit_controller_manager,
             moveit_controllers,
             planning_scene_monitor_parameters,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
     )
 
@@ -213,15 +207,17 @@ def generate_launch_description():
             robot_description_semantic,
             planning_pipeline_config,
             robot_description_kinematics,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
     )
 
     # Servo Configuration
     servo_params = {
-        "moveit_servo": ParameterBuilder("annin_ar4_moveit_config")
-        .yaml("config/moveit_servo.yaml")
-        .to_dict()
+        "moveit_servo":
+        ParameterBuilder("annin_ar4_moveit_config").yaml(
+            "config/moveit_servo.yaml").to_dict()
     }
 
     # This sets the update rate and planning group name for the acceleration limiting filter.
@@ -240,7 +236,9 @@ def generate_launch_description():
             robot_description_kinematics,
             joint_limits,
             planning_scene_monitor_parameters,
-            {"use_sim_time": use_sim_time},
+            {
+                "use_sim_time": use_sim_time
+            },
         ],
         output="screen",
         condition=IfCondition(moveit_servo),

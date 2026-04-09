@@ -40,6 +40,7 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> actuator_vel_commands_;
   std::vector<double> actuator_positions_;
   std::vector<double> actuator_velocities_;
+  std::vector<double> filtered_actuator_positions_;
 
   // Shared memory
   std::vector<double> joint_offsets_;
@@ -49,6 +50,15 @@ class ARHardwareInterface : public hardware_interface::SystemInterface {
   std::vector<double> joint_position_commands_;
   std::vector<double> joint_velocity_commands_;
   std::vector<double> joint_effort_commands_;
+  std::vector<double> motion_reference_actuator_pos_commands_;
+
+  bool state_filter_seeded_ = false;
+  bool motion_log_active_ = false;
+  static constexpr double kRestVelocityThresholdDeg = 0.5;
+  static constexpr double kRestPositionDeadbandDeg = 0.05;
+  static constexpr double kMotionStartThresholdDeg = 0.25;
+  static constexpr double kMotionEndVelocityThresholdDeg = 0.5;
+  static constexpr double kMotionEndPositionThresholdDeg = 0.5;
 
   // Misc
   void init_variables();

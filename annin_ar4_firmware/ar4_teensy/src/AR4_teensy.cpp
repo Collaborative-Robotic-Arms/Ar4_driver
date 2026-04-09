@@ -30,7 +30,7 @@ const float MOTOR_STEPS_PER_DEG_MK3[] = { 88.88888888, 111.11111112, 111.1111111
                                          99.55555554, 43.72049776, 44.44444444 };
 
 // set encoder pins
-Encoder encPos[6] = { Encoder(14, 15), Encoder(17, 16), Encoder(19, 18),
+Encoder encPos[6] = { Encoder(14, 15), Encoder(16, 17), Encoder(19, 18),
                      Encoder(20, 21), Encoder(23, 22), Encoder(24, 25) };
 // +1 if encoder direction matches motor direction, -1 otherwise
 int ENC_DIR[] = { -1, 1, 1, 1, 1, 1 };
@@ -336,6 +336,13 @@ void MoveVelocity(String inData) {
   }
 }
 
+void setAllMaxSpeeds() {
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+      MOTOR_STEPS_PER_DEG[MODEL][i]);
+  }
+}
+
 void MoveTo(const int* cmdSteps, int* motorSteps) {
   setAllMaxSpeeds();
   for (int i = 0; i < NUM_JOINTS; ++i) {
@@ -380,13 +387,6 @@ bool AtPosition(const int* targetMotorSteps, const int* currMotorSteps,
     }
   }
   return allDone;
-}
-
-void setAllMaxSpeeds() {
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-      MOTOR_STEPS_PER_DEG[MODEL][i]);
-  }
 }
 
 
@@ -486,6 +486,72 @@ bool moveLimitedAwayFromLimitSwitch(int* calJoints) {
   return true;
 }
 
+bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
+  int calSteps[]) {
+  if (!moveLimitedAwayFromLimitSwitch(calJoints)) {
+    outputMsg = "ER: Failed to move away from limit switches at the start.";
+    return false;
+  }
+
+  if (!moveToLimitSwitches(calJoints)) {
+    outputMsg = "ER: Failed to move to limit switches.";
+    return false;
+  }
+
+  // record encoder steps
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    if (calJoints[i]) {
+      calSteps[i] = encPos[i].read();
+    }
+  }
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    if (calJoints[i]) {
+      encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
+    }
+  }
+
+  // move away from the limit switches a bit so that if the next command
+  // is in the wrong direction, the limit switches will not be run over
+  // immediately and become damaged.
+  if (!moveAwayFromLimitSwitch(calJoints)) {
+    outputMsg = "ER: Failed to move away from limit switches.";
+    return false;
+  }
+
+  // return to original position
+  unsigned long startTime = millis();
+  int curMotorSteps[NUM_JOINTS];
+  readMotorSteps(curMotorSteps);
+
+  while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
+    if (millis() - startTime > 12000) {
+      // Note: this occasionally happens but doesn't affect calibration result
+      Serial.println(
+        "WN: Failed to return to original position post calibration.");
+      break;
+    }
+
+    readMotorSteps(curMotorSteps);
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      if (!calJoints[i]) {
+        curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
+      }
+    }
+    MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
+
+    for (int i = 0; i < NUM_JOINTS; ++i) {
+      safeRun(stepperJoints[i]);
+    }
+  }
+
+  // restore original max speed
+  for (int i = 0; i < NUM_JOINTS; ++i) {
+    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
+      MOTOR_STEPS_PER_DEG[MODEL][i]);
+  }
+  return true;
+}
+
 bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
   if (inputMsg.length() != 7) {
     outputMsg = "ER: Invalid sequence length.";
@@ -552,71 +618,6 @@ bool doCalibrationRoutineSequence(String& outputMsg, String& inputMsg) {
   return true;
 }
 
-bool doCalibrationRoutine(String& outputMsg, int calJoints[NUM_JOINTS],
-  int calSteps[]) {
-  if (!moveLimitedAwayFromLimitSwitch(calJoints)) {
-    outputMsg = "ER: Failed to move away from limit switches at the start.";
-    return false;
-  }
-
-  if (!moveToLimitSwitches(calJoints)) {
-    outputMsg = "ER: Failed to move to limit switches.";
-    return false;
-  }
-
-  // record encoder steps
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    if (calJoints[i]) {
-      calSteps[i] = encPos[i].read();
-    }
-  }
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    if (calJoints[i]) {
-      encPos[i].write(ENC_RANGE_STEPS[i] * ENC_MAX_AT_ANGLE_MIN[i]);
-    }
-  }
-
-  // move away from the limit switches a bit so that if the next command
-  // is in the wrong direction, the limit switches will not be run over
-  // immediately and become damaged.
-  if (!moveAwayFromLimitSwitch(calJoints)) {
-    outputMsg = "ER: Failed to move away from limit switches.";
-    return false;
-  }
-
-  // return to original position
-  unsigned long startTime = millis();
-  int curMotorSteps[NUM_JOINTS];
-  readMotorSteps(curMotorSteps);
-
-  while (!AtPosition(REST_MOTOR_STEPS[MODEL], curMotorSteps, 5)) {
-    if (millis() - startTime > 12000) {
-      // Note: this occasionally happens but doesn't affect calibration result
-      Serial.println(
-        "WN: Failed to return to original position post calibration.");
-      break;
-    }
-
-    readMotorSteps(curMotorSteps);
-    for (int i = 0; i < NUM_JOINTS; ++i) {
-      if (!calJoints[i]) {
-        curMotorSteps[i] = REST_MOTOR_STEPS[MODEL][i];
-      }
-    }
-    MoveTo(REST_MOTOR_STEPS[MODEL], curMotorSteps);
-
-    for (int i = 0; i < NUM_JOINTS; ++i) {
-      safeRun(stepperJoints[i]);
-    }
-  }
-
-  // restore original max speed
-  for (int i = 0; i < NUM_JOINTS; ++i) {
-    stepperJoints[i].setMaxSpeed(JOINT_MAX_SPEED[i] *
-      MOTOR_STEPS_PER_DEG[MODEL][i]);
-  }
-  return true;
-}
 
 void updateMotorVelocities(int* motorSteps, int* lastMotorSteps,
   int* checksteps, unsigned long* lastVelocityCalc,

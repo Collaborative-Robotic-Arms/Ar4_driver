@@ -51,6 +51,8 @@ The following projects showcases additional features and capabilities built on t
 
 ## Installation
 
+> 💡 It's generally a good idea to first ensure that your robot arm works with the official [AR4 Control Software](https://anninrobotics.com/downloads/), where there's better tools for debugging mechanical and electrical issues.
+
 - Install [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html) for Ubuntu 24.04
 - Clone this repository:
   ```bash
@@ -82,19 +84,36 @@ procedure as specified in [AR4 Robot Setup](https://www.youtube.com/watch?v=OL6l
 An extra step required is to install [Bounce2](https://github.com/thomasfredericks/Bounce2)
 from the Library Manager in Arduino.
 
+### Hardware Settings
+
+⚠️ For MK3, new DIP switch settings introduced after AR4 Control Software V6.1 is used. The difference is illustrated [here](./docs/ar4_dip_switch_settings.png).
+
 ### [Optional] Running in Docker Container
 
 A docker container and run script has been provided that can be used to run the
 robot and any GUI programs. It requires [rocker](https://github.com/osrf/rocker) to be installed. Then you can start the docker container with:
 
 ```bash
-docker build -t ar4_ros_driver .
+docker build -t ar4_ros_driver -f docker/Dockerfile .
 
 # Adjust the volume mounting and devices based on your project and hardware
 rocker --ssh --x11 \
   --devices /dev/ttyUSB0 /dev/ttyACM0 \
-  --volume $(pwd):/ar4_ws/src/ar4_ros_driver -- \
+  --volume $(pwd):/ar4_ws/src -- \
   ar4_ros_driver bash
+```
+
+The docker image runs colcon build during the docker image build process, and will source the `setup.bash` file when the container starts (see `docker/entrypoint.sh`).
+Therefor the image can be used to directly run ros2 commands.
+
+For example, to run the annin_ar4_driver node directly:
+
+```bash
+rocker --ssh --x11 \
+  --devices /dev/ttyUSB0 /dev/ttyACM0 \
+  --volume $(pwd):/ar4_ws/src -- \
+  ar4_ros_driver \
+  ros2 launch annin_ar4_driver driver.launch.py calibrate:=True ar_model:="mk2"
 ```
 
 ## Usage

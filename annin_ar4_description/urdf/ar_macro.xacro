@@ -67,7 +67,7 @@
       <limit
         lower="${robot_parameters['j1_limit_min']}"
         upper="${robot_parameters['j1_limit_max']}"
-        effort="1000"
+        effort="-1"
         velocity="1.0472"
       />
     </joint>
@@ -101,7 +101,7 @@
       <limit 
         lower="${robot_parameters['j2_limit_min']}"
         upper="${robot_parameters['j2_limit_max']}"
-        effort="1000" 
+        effort="-1" 
         velocity="1.0472"
       />
     </joint>
@@ -135,7 +135,7 @@
       <limit
         lower="${robot_parameters['j3_limit_min']}"
         upper="${robot_parameters['j3_limit_max']}"
-        effort="1000"
+        effort="-1"
         velocity="1.0472"
       />
     </joint>
@@ -169,7 +169,7 @@
       <limit
         lower="${robot_parameters['j4_limit_min']}"
         upper="${robot_parameters['j4_limit_max']}"
-        effort="1000"
+        effort="-1"
         velocity="1.0472"
       />
     </joint>
@@ -196,14 +196,14 @@
       </collision>
     </link>
     <joint name="${tf_prefix}joint_5" type="revolute">
-      <origin rpy="${pi} 0 -1.57075" xyz="0 0 -0.22263"/>
+      <origin rpy="${pi} 0 -1.5708" xyz="0 0 -0.22263"/>
       <parent link="${tf_prefix}link_4"/>
       <child link="${tf_prefix}link_5"/>
       <axis xyz="1 0 0"/>
       <limit
         lower="${robot_parameters['j5_limit_min']}"
         upper="${robot_parameters['j5_limit_max']}"
-        effort="1000"
+        effort="-1"
         velocity="1.0472"
       />
     </joint>
@@ -237,7 +237,7 @@
       <limit
         lower="${robot_parameters['j6_limit_min']}"
         upper="${robot_parameters['j6_limit_max']}"
-        effort="1000"
+        effort="-1"
         velocity="1.0472"
       />
     </joint>
@@ -248,14 +248,6 @@
       <parent link="${tf_prefix}link_6" />
       <child link="${tf_prefix}ee_link" />
       <origin xyz="0 0 0.0" rpy="0 0 0" />
-    </joint>
-
-    <link name="${tf_prefix}laser_point" />
-
-    <joint name="${tf_prefix}laser_point_joint" type="fixed">
-      <parent link="${tf_prefix}ee_link" /> <!-- or laser_holder_link -->
-      <child link="${tf_prefix}laser_point" />
-      <origin xyz="0 0 0.106" rpy="0 0 0" /> <!-- Adjust if needed -->
     </joint>
 
   </xacro:macro>

@@ -393,7 +393,7 @@ private:
         
         // Update these positions based on your AR4 URDF joint limits!
         // Usually, 0.0 is closed, and some small positive number (e.g., 0.015) is open, or vice versa.
-        double pos = open ? 0.015 : 0.08; 
+        double pos = open ? 0.0 : 0.015; 
         point.positions = {pos, pos};
         point.time_from_start = rclcpp::Duration::from_seconds(1.0);
         goal_msg.trajectory.points.push_back(point);

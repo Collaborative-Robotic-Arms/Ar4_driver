@@ -104,7 +104,7 @@
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw1_link" />
       <axis xyz="1 0 0" />
-      <limit lower="0" upper="0.014" effort="-1" velocity="1.0" />
+      <limit lower="0.0" upper="0.015" effort="100" velocity="1.0" />
     </joint>
 
     <joint name="${tf_prefix}gripper_jaw2_joint" type="prismatic">
@@ -112,9 +112,55 @@
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw2_link" />
       <axis xyz="-1 0 0" />
-      <limit lower="0" upper="0.014" effort="1000" velocity="1.0" />
-      <mimic joint="${tf_prefix}gripper_jaw1_joint" multiplier="1" offset="0" />
+      <limit lower="0.0" upper="0.015" effort="100" velocity="1.0" />
     </joint>
+    
+    <gazebo reference="${tf_prefix}gripper_jaw1_link">
+      <surface>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode>
+            <mu>0.8</mu>
+            <mu2>0.8</mu2>
+            <slip1>0.001</slip1>
+            <slip2>0.001</slip2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <max_vel>0.0</max_vel>
+            <min_depth>0.001</min_depth>
+            <kp>100000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </gazebo>
 
+    <gazebo reference="${tf_prefix}gripper_jaw2_link">
+      <surface>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode>
+            <mu>0.8</mu>
+            <mu2>0.8</mu2>
+            <slip1>0.001</slip1>
+            <slip2>0.001</slip2>
+          </ode>
+        </friction>
+        <contact>
+          <ode>
+            <max_vel>0.0</max_vel>
+            <min_depth>0.001</min_depth>
+            <kp>100000</kp>
+            <kd>1000</kd>
+          </ode>
+        </contact>
+      </surface>
+    </gazebo>
   </xacro:macro>
 </robot>

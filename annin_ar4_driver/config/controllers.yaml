@@ -6,7 +6,7 @@
       type: joint_trajectory_controller/JointTrajectoryController
 
     gripper_controller:
-      type: position_controllers/GripperActionController
+      type: joint_trajectory_controller/JointTrajectoryController
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -58,4 +58,12 @@
 
 /**/gripper_controller:
   ros__parameters:
-    joint: $(var tf_prefix)gripper_jaw1_joint
+    joints:
+      - $(var tf_prefix)gripper_jaw1_joint
+      - $(var tf_prefix)gripper_jaw2_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    allow_partial_joints_goal: false

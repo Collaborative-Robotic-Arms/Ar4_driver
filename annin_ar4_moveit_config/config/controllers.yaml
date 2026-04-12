@@ -18,8 +18,9 @@
           - $(var tf_prefix)joint_6
 
       gripper_controller:
-        action_ns: gripper_cmd
-        type: GripperCommand
+        action_ns: follow_joint_trajectory
+        type: FollowJointTrajectory
         default: true
         joints:
           - $(var tf_prefix)gripper_jaw1_joint
+          - $(var tf_prefix)gripper_jaw2_joint

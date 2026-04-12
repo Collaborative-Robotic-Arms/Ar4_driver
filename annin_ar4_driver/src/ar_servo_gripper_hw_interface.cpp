@@ -17,10 +17,16 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
 
   info_ = info;
 
+  if (info_.joints.empty()) {
+    RCLCPP_ERROR(logger_, "No gripper joints were provided to the hardware interface.");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
   // Extract position limits from robot description
   if (!info_.limits.empty()) {
     for (const auto& limit_pair : info_.limits) {
-      if (limit_pair.first == "gripper_jaw1_joint") {
+      if (limit_pair.first == info_.joints.front().name ||
+          limit_pair.first == "gripper_jaw1_joint") {
         if (limit_pair.second.has_position_limits) {
           closed_position_ = limit_pair.second.min_position;
           open_position_ = limit_pair.second.max_position;
@@ -32,7 +38,7 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
   }
 
   if (closed_position_ == 0.0 && open_position_ == 0.0) {
-    RCLCPP_ERROR(logger_, "No joint limits found for gripper_jaw1_joint.");
+    RCLCPP_ERROR(logger_, "No joint limits found for the primary gripper joint.");
     return hardware_interface::CallbackReturn::ERROR;
   }
 

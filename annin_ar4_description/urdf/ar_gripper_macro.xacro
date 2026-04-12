@@ -122,10 +122,10 @@
             <ode/>
           </torsional>
           <ode>
-            <mu>0.8</mu>
-            <mu2>0.8</mu2>
-            <slip1>0.001</slip1>
-            <slip2>0.001</slip2>
+            <mu>100</mu>
+            <mu2>100</mu2>
+            <slip1>0.0</slip1>
+            <slip2>0.0</slip2>
           </ode>
         </friction>
         <contact>
@@ -133,7 +133,7 @@
             <max_vel>0.0</max_vel>
             <min_depth>0.001</min_depth>
             <kp>100000</kp>
-            <kd>1000</kd>
+            <kd>10</kd>
           </ode>
         </contact>
       </surface>
@@ -146,10 +146,10 @@
             <ode/>
           </torsional>
           <ode>
-            <mu>0.8</mu>
-            <mu2>0.8</mu2>
-            <slip1>0.001</slip1>
-            <slip2>0.001</slip2>
+            <mu>100</mu>
+            <mu2>100</mu2>
+            <slip1>0.0</slip1>
+            <slip2>0.0</slip2>
           </ode>
         </friction>
         <contact>
@@ -157,7 +157,7 @@
             <max_vel>0.0</max_vel>
             <min_depth>0.001</min_depth>
             <kp>100000</kp>
-            <kd>1000</kd>
+            <kd>10</kd>
           </ode>
         </contact>
       </surface>

@@ -195,17 +195,23 @@ private:
             goal_handle->publish_feedback(feedback);
             geometry_msgs::msg::Pose pregrasp = goal->target_pose;
             pregrasp.position.z = pregrasp.position.z + 0.1;
+            
+            // 1. Move fast through free space to get above the brick (Standard Joint Planning)
             if (!move_to_pose(pregrasp, goal_handle)) { HANDLE_FAILURE("PICK: Failed to reach pregrasp"); }
 
             feedback->current_status = "MOVING_TO_TARGET";
             goal_handle->publish_feedback(feedback);
-            if (!move_to_pose(goal->target_pose, goal_handle)) { HANDLE_FAILURE("PICK: Failed to reach pose"); }
+            
+            // 2. Dive straight down (Strict Cartesian Planning)
+            if (!move_cartesian(goal->target_pose, goal_handle)) { HANDLE_FAILURE("PICK: Failed to reach pose"); }
 
             if (!control_gripper(false, goal_handle)) { HANDLE_FAILURE("PICK: Failed to grasp object"); }
 
             geometry_msgs::msg::Pose postgrasp = goal->target_pose;
             postgrasp.position.z = postgrasp.position.z + 0.1;
-            if (!move_to_pose(postgrasp, goal_handle)) { HANDLE_FAILURE("PICK: Failed to reach postgrasp"); }
+            
+            // 3. Pull straight back up so we don't knock over other bricks (Strict Cartesian Planning)
+            if (!move_cartesian(postgrasp, goal_handle)) { HANDLE_FAILURE("PICK: Failed to reach postgrasp"); }
         }
         else if (goal->task_type == "PLACE")
         {
@@ -213,16 +219,25 @@ private:
             goal_handle->publish_feedback(feedback);
             geometry_msgs::msg::Pose preplace = goal->target_pose;
             preplace.position.z = preplace.position.z + 0.1;
+            
+            // 1. Move fast to the hover position
             if (!move_to_pose(preplace, goal_handle)) { HANDLE_FAILURE("PLACE: Failed to reach pre place"); }
 
             feedback->current_status = "MOVING_TO_PLACE";
             goal_handle->publish_feedback(feedback);
-            if (!move_to_pose(goal->target_pose, goal_handle)) { HANDLE_FAILURE("PLACE: Failed to reach pose"); }
+            
+            // 2. Press the brick straight down into place
+            if (!move_cartesian(goal->target_pose, goal_handle)) { HANDLE_FAILURE("PLACE: Failed to reach pose"); }
 
             feedback->current_status = "RELEASING_OBJECT";
             goal_handle->publish_feedback(feedback);
             if (!control_gripper(true, goal_handle)) { HANDLE_FAILURE("PLACE: Failed to release object"); }
             
+            // 3. Lift straight up to avoid catching the placed brick
+            geometry_msgs::msg::Pose postplace = goal->target_pose;
+            postplace.position.z = postplace.position.z + 0.1;
+            move_cartesian(postplace, goal_handle); // We don't strictly fail the sequence if this specific lift fails
+
             feedback->current_status = "RETURNING_HOME";
             goal_handle->publish_feedback(feedback);
             move_to_named_target("home", goal_handle); 
@@ -240,27 +255,44 @@ private:
         }
         else if (goal->task_type == "INTERMEDIATE_TAKE")
         {
-            // 1. Open gripper to prepare for handover
             feedback->current_status = "OPENING_GRIPPER_FOR_TAKE";
             goal_handle->publish_feedback(feedback);
             if (!control_gripper(true, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to open gripper"); }
 
-            // 2. Move precisely to the grasp point on the hovering brick
+            // NEW: Create a pre-take pose 10cm above the hovering brick
+            geometry_msgs::msg::Pose pretake = goal->target_pose;
+            pretake.position.z = pretake.position.z + 0.1;
+
+            feedback->current_status = "MOVING_TO_PRE_TAKE";
+            goal_handle->publish_feedback(feedback);
+            // 1. Swoop through free space to get safely above the giving arm
+            if (!move_to_pose(pretake, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to reach pre-take"); }
+
             feedback->current_status = "MOVING_TO_HANDOVER_GRASP";
             goal_handle->publish_feedback(feedback);
-            if (!move_to_pose(goal->target_pose, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to reach pose"); }
+            // 2. Slide perfectly straight down to grab the brick
+            if (!move_cartesian(goal->target_pose, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to reach final take pose"); }
 
-            // 3. Close gripper to secure the brick
             feedback->current_status = "CLOSING_GRIPPER_TO_TAKE";
             goal_handle->publish_feedback(feedback);
             if (!control_gripper(false, goal_handle)) { HANDLE_FAILURE("INTERMEDIATE_TAKE: Failed to grasp"); }
         }
         else if (goal->task_type == "RELEASE")
         {
-            // Tell the giving arm to let go after the taking arm has secured it
             feedback->current_status = "RELEASING_BRICK";
             goal_handle->publish_feedback(feedback);
             if (!control_gripper(true, goal_handle)) { HANDLE_FAILURE("RELEASE: Failed to open gripper"); }
+
+            // NEW: Back away safely in a straight line before the supervisor swoops us home!
+            feedback->current_status = "RETRACTING_FROM_HANDOVER";
+            goal_handle->publish_feedback(feedback);
+            
+            // Get exactly where the giving arm is right now
+            geometry_msgs::msg::Pose escape_pose = move_group_->getCurrentPose().pose; 
+            escape_pose.position.z += 0.1; // Pull straight up 10cm
+            
+            // Slide straight up. (We don't strictly fail the action if this fails, just try to escape safely)
+            move_cartesian(escape_pose, goal_handle); 
         }
 
         // If we reach here naturally, ensure we haven't been canceled at the last millisecond
@@ -270,6 +302,41 @@ private:
         result->error_message = "None";
         goal_handle->succeed(result);
         RCLCPP_INFO(this->get_logger(), "AR4 Task Completed Successfully.");
+    }
+
+    bool move_cartesian(const geometry_msgs::msg::Pose & target, std::shared_ptr<GoalHandleExecuteTask> goal_handle)
+    {
+        if (goal_handle->is_canceling()) return false;
+
+        std::vector<geometry_msgs::msg::Pose> waypoints;
+        waypoints.push_back(target);
+
+        moveit_msgs::msg::RobotTrajectory trajectory;
+        const double jump_threshold = 0.0;
+        const double eef_step = 0.005; // 5mm steps for high-precision straight line
+
+        auto current_state = move_group_->getCurrentState(1.0);
+        if (current_state) {
+            current_state->enforceBounds();
+            move_group_->setStartState(*current_state);
+        } else {
+            move_group_->setStartStateToCurrentState();
+        }
+
+        // Compute the straight-line path
+        double fraction = move_group_->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+
+        if (goal_handle->is_canceling()) return false;
+
+        if (fraction >= 0.95) { // Require at least 95% of the path to be a valid straight line
+            moveit::planning_interface::MoveGroupInterface::Plan plan;
+            plan.trajectory = trajectory;
+            auto exec_code = move_group_->execute(plan);
+            return (exec_code == moveit::core::MoveItErrorCode::SUCCESS);
+        } else {
+            RCLCPP_ERROR(this->get_logger(), "Cartesian Path failed. Only computed %.2f%% of the straight line.", fraction * 100.0);
+            return false;
+        }
     }
 
     bool move_to_pose(const geometry_msgs::msg::Pose & target, std::shared_ptr<GoalHandleExecuteTask> goal_handle)

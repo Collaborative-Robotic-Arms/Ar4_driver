@@ -54,9 +54,9 @@
         </material>
       </visual>
       <collision>
+        <origin xyz="-0.024 0.0 0.065" rpy="0 0 0" /> 
         <geometry>
-          <mesh
-            filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw1_link.STL" />
+          <box size="0.007 0.018 0.035" /> 
         </geometry>
       </collision>
       <inertial>
@@ -86,9 +86,9 @@
         </material>
       </visual>
       <collision>
+        <origin xyz="0.024 0.0 0.065" rpy="0 0 0" /> 
         <geometry>
-          <mesh
-            filename="file://$(find annin_ar4_description)/meshes/ar4_gripper/gripper_jaw2_link.STL" />
+          <box size="0.007 0.018 0.035" /> 
         </geometry>
       </collision>
       <inertial>
@@ -104,7 +104,7 @@
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw1_link" />
       <axis xyz="1 0 0" />
-      <limit lower="0.0" upper="0.015" effort="100" velocity="1.0" />
+      <limit lower="0.0" upper="0.015" effort="20" velocity="1.0" />
     </joint>
 
     <joint name="${tf_prefix}gripper_jaw2_joint" type="prismatic">
@@ -112,18 +112,22 @@
       <parent link="${tf_prefix}gripper_base_link" />
       <child link="${tf_prefix}gripper_jaw2_link" />
       <axis xyz="-1 0 0" />
-      <limit lower="0.0" upper="0.015" effort="100" velocity="1.0" />
+      <limit lower="0.0" upper="0.015" effort="20" velocity="1.0" />
     </joint>
     
     <gazebo reference="${tf_prefix}gripper_jaw1_link">
       <surface>
         <friction>
           <torsional>
-            <ode/>
+            <ode>
+              <coefficient>100.0</coefficient>
+              <use_patch_radius>true</use_patch_radius>
+              <patch_radius>0.015</patch_radius>
+            </ode>
           </torsional>
           <ode>
-            <mu>100</mu>
-            <mu2>100</mu2>
+            <mu>100.0</mu>
+            <mu2>100.0</mu2>
             <slip1>0.0</slip1>
             <slip2>0.0</slip2>
           </ode>
@@ -132,8 +136,8 @@
           <ode>
             <max_vel>0.0</max_vel>
             <min_depth>0.001</min_depth>
-            <kp>100000</kp>
-            <kd>10</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>
@@ -143,11 +147,15 @@
       <surface>
         <friction>
           <torsional>
-            <ode/>
+            <ode>
+              <coefficient>100.0</coefficient>
+              <use_patch_radius>true</use_patch_radius>
+              <patch_radius>0.015</patch_radius>
+            </ode>
           </torsional>
           <ode>
-            <mu>100</mu>
-            <mu2>100</mu2>
+            <mu>100.0</mu>
+            <mu2>100.0</mu2>
             <slip1>0.0</slip1>
             <slip2>0.0</slip2>
           </ode>
@@ -156,8 +164,8 @@
           <ode>
             <max_vel>0.0</max_vel>
             <min_depth>0.001</min_depth>
-            <kp>100000</kp>
-            <kd>10</kd>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
           </ode>
         </contact>
       </surface>

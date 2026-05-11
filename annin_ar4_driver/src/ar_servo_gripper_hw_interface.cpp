@@ -30,7 +30,8 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_init(
         if (limit_pair.second.has_position_limits) {
           closed_position_ = limit_pair.second.min_position;
           open_position_ = limit_pair.second.max_position;
-          RCLCPP_INFO(logger_, "Using joint limits: closed = %f m, open = %f m",
+          RCLCPP_INFO(logger_,
+                      "Using visual joint limits: open = %f m, closed = %f m",
                       closed_position_, open_position_);
         }
       }
@@ -115,6 +116,9 @@ hardware_interface::CallbackReturn ARServoGripperHWInterface::on_activate(
     return hardware_interface::CallbackReturn::ERROR;
   }
   position_ = servo_angle_to_linear_pos(pos_deg);
+  position_command_ = position_;
+  last_servo_angle_command_ = pos_deg;
+  has_servo_angle_command_ = true;
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -146,19 +150,12 @@ ARServoGripperHWInterface::export_command_interfaces() {
 
 hardware_interface::return_type ARServoGripperHWInterface::read(
     const rclcpp::Time& time, const rclcpp::Duration& /*period*/) {
-  int pos_deg;
-  bool success = driver_.getPosition(pos_deg);
-  if (!success) {
-    RCLCPP_ERROR(logger_, "Failed to read position from servo");
-    return hardware_interface::return_type::ERROR;
-  }
-  position_ = servo_angle_to_linear_pos(pos_deg);
   std::string logInfo = "Gripper Pos: " + std::to_string(position_);
 
   // Process current sample for overcurrent protection
   if (overcurrent_protection_) {
     // Read current from the driver
-    success = driver_.getCurrent(current_);
+    bool success = driver_.getCurrent(current_);
     if (!success) {
       RCLCPP_ERROR(logger_, "Failed to read current from servo");
       return hardware_interface::return_type::ERROR;
@@ -174,7 +171,15 @@ hardware_interface::return_type ARServoGripperHWInterface::read(
 
 hardware_interface::return_type ARServoGripperHWInterface::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
-  double position_command = position_command_;
+  double position_command =
+      std::clamp(position_command_, closed_position_, open_position_);
+  if (position_command != position_command_) {
+    RCLCPP_WARN_THROTTLE(
+        logger_, clock_, 1000,
+        "Clamped gripper command %.6f m to %.6f m inside calibrated range "
+        "[%.6f, %.6f]",
+        position_command_, position_command, closed_position_, open_position_);
+  }
 
   // Apply overcurrent protection
   if (overcurrent_protection_) {
@@ -185,10 +190,20 @@ hardware_interface::return_type ARServoGripperHWInterface::write(
   int pos_deg = linear_pos_to_servo_angle(position_command);
   std::string logInfo = "Gripper Cmd: " + std::to_string(position_command);
   RCLCPP_DEBUG_THROTTLE(logger_, clock_, 500, logInfo.c_str());
+
+  if (has_servo_angle_command_ && pos_deg == last_servo_angle_command_) {
+    return hardware_interface::return_type::OK;
+  }
+
   bool success = driver_.writePosition(pos_deg);
   if (!success) {
     return hardware_interface::return_type::ERROR;
   }
+
+  last_servo_angle_command_ = pos_deg;
+  has_servo_angle_command_ = true;
+  position_ = servo_angle_to_linear_pos(pos_deg);
+  velocity_ = 0.0;
   return hardware_interface::return_type::OK;
 }
 

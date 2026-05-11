@@ -48,6 +48,8 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   double velocity_ = 0.0;
   double current_ = 0.0;
   double position_command_ = 0.0;
+  int last_servo_angle_command_ = 0;
+  bool has_servo_angle_command_ = false;
 
   // Overcurrent protection (optional)
   std::unique_ptr<GripperOverCurrentProtection> overcurrent_protection_;
@@ -55,15 +57,15 @@ class ARServoGripperHWInterface : public hardware_interface::SystemInterface {
   int linear_pos_to_servo_angle(double linear_pos) {
     double normalized_pos =
         (linear_pos - closed_position_) / (open_position_ - closed_position_);
-    return static_cast<int>(closed_servo_angle_ +
+    return static_cast<int>(open_servo_angle_ +
                             normalized_pos *
-                                (open_servo_angle_ - closed_servo_angle_));
+                                (closed_servo_angle_ - open_servo_angle_));
   };
 
   double servo_angle_to_linear_pos(int angular_pos) {
     double normalized_pos =
-        (angular_pos - closed_servo_angle_) /
-        static_cast<double>(open_servo_angle_ - closed_servo_angle_);
+        (angular_pos - open_servo_angle_) /
+        static_cast<double>(closed_servo_angle_ - open_servo_angle_);
     return normalized_pos * (open_position_ - closed_position_) +
            closed_position_;
   };
